@@ -1,0 +1,37 @@
+# ── Python ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+dist/
+build/
+
+# ── Large data files ─────────────────────────────────────────
+*.csv
+*.parquet
+*.avro
+*.orc
+*.gz
+*.zip
+*.tar
+
+# ── Secrets & credentials ────────────────────────────────────
+.env
+*.key
+*.pem
+credentials/
+secrets/
+service_account*.json
+
+# ── Build artefacts ──────────────────────────────────────────
+portfolio_build.log
+!build_manifest.json
+
+# ── IDE / OS ─────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

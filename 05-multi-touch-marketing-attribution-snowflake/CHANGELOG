@@ -1,0 +1,123 @@
+snowplow-fractribution 0.3.7 (2023-11-27)
+---------------------------------------
+## Summary
+Fixes an issue where long paths in redshift could cause the model to fail as the output of the function was not set to the max length.
+
+snowplow-fractribution 0.3.6 (2023-11-24)
+---------------------------------------
+## Summary
+Fixes an issue with the window calculation when start/end dates are not specified.
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file.
+
+snowplow-fractribution 0.3.5 (2023-09-12)
+---------------------------------------
+## Summary
+Bumps the max supported `snowplow-utils` version to allow usage with our other packages.
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file.
+
+snowplow-fractribution 0.3.4 (2023-08-17)
+---------------------------------------
+## Summary
+This release adds a couple of features: handling paths that are longer than 256 characters in Redshift, providing the option to filter channels based on which ones to include, and enables automatically setting the conversion window base on the last nth number of complete days within the package.
+
+## Features
+- Increase redshift path inputs to use max varchar instead of default 256 (Close #26)
+- Make conversion_window_start_date more configurable (Close #27)
+- Add channels_to_include variable (Close #28)
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file.
+
+snowplow-fractribution 0.3.3 (2023-07-27)
+---------------------------------------
+## Summary
+This version adds a fix for BigQuery to allow you to correctly filter channels using the `snowplow__channels_to_exclude` variable.
+
+## Features
+- Fix channel filtering BQ bug
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file.
+
+snowplow-fractribution 0.3.2 (2023-07-25)
+---------------------------------------
+## Summary
+This version allows the user to filter their events table using the timestamp field that the table is partitioned on, optimizing query performance.
+
+## Features
+- snowplow_fractribution_conversions_by_customer_id should allow extra filter column with buffer (Close #17)
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file.
+
+snowplow-fractribution 0.3.1 (2023-06-12)
+---------------------------------------
+## Summary
+This version adds the ability for users on Snowflake to run the attribution modeling script via Snowpark so all processing is done by the package, and adds support for running the package on Redshift (but not Postgres).
+
+## Features
+- Add the option to run python modeling on Snowpark for Snowflake users
+- Add the ability to run the package and a python script for Redshift
+
+## Docs
+- Tidied package variable scope
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file, to use the new Snowpark feature be sure to set the `snowplow__run_python_script_in_snowpark` and `snowplow__attribution_model_for_snowpark` variables.
+
+snowplow-fractribution 0.3.0 (2023-03-29)
+---------------------------------------
+## Summary
+This version migrates our models away from the `snowplow_incremental_materialization` and instead moves to using the built-in `incremental` with an optimization applied on top. This package doesn't use this and so there are no changes to models, but the version of snowplow-web this now supports requires a later version of dbt so this remains a breaking change, and will also potentially impact any custom models you have.
+
+## 🚨 Breaking Changes 🚨
+### Changes to materialization
+To take advantage of the optimization we apply to the `incremental` materialization, users will need to add the following to their `dbt_project.yml` :
+```yaml
+# dbt_project.yml
+...
+dispatch:
+  - macro_namespace: dbt
+    search_order: ['snowplow_utils', 'dbt']
+```
+
+For custom models please refer to the [snowplow utils migration guide](https://docs.snowplow.io/docs/modeling-your-data/modeling-your-data-with-dbt/migration-guides/utils/#upgrading-to-0140) and the latest docs on [creating custom incremental models](https://docs.snowplow.io/docs/modeling-your-data/modeling-your-data-with-dbt/dbt-custom-models/#incremental-models).
+
+## Features
+- Migrate from `get_cluster_by` and `get_partition_by` to `get_value_by_target_type`
+- Migrate all models to use new materialization
+
+## Docs
+- Update readme
+
+## Upgrading
+Bump the snowplow-fractribution version in your `packages.yml` file, and ensuring you have followed the above steps. You can read more in our [upgrade guide](https://docs.snowplow.io/docs/modeling-your-data/modeling-your-data-with-dbt/migration-guides/fractribution/#upgrading-to-0140)
+
+snowplow-fractribution 0.2.0 (2023-02-24)
+---------------------------------------
+## Summary
+This release adds support for Databricks and BigQuery. From now users are allowed to filter unwanted channels as well. Under the hood we added an integration testing suite and some automations with Github actions.
+
+## Features
+Add support for Databricks and BigQuery
+Add release and pages actions (#5)
+Allow user to filter unwanted channels (#3)
+Add versioning for Docker
+
+## 🚨 Breaking Changes 🚨
+Variable names have changed (prefaced with `snowplow__`), please align the new ones found in the dbt_project.yml file and the ones defined in your own project's yml file that you used to overwrite the default values. Please note that
+`snowplow__path_transforms` variable is a dictionary instead of an array and that the path transform names have also changed (e.g: `Exposure` -> `exposure_path`).
+
+The scripts inside the utils folder also changed which need to be replaced. In case you used Docker, you can either pull the latest image: `docker pull snowplow/fractribution:latest` or the version number in line with the package: `docker pull snowplow/fractribution:0.2.0`.
+
+Due to dependencies please be aware that the package requires dbt-core@1.3 as a minimum.
+
+## Upgrading
+To upgrade bump the snowplow-fractribution version in your `packages.yml` file as well as make the necessary changes highlighted in the Breaking Changes section.
+
+snowplow-fractribution 0.1.0 (2022-12-15)
+---------------------------------------
+Add support for Snowflake

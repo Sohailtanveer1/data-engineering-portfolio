@@ -1,0 +1,181 @@
+{
+  "build_timestamp": "2026-05-25T06:26:34.830733+00:00",
+  "workspace": "C:\\Users\\mdsoh\\data-engineering-portfolio",
+  "total_projects": 10,
+  "projects": [
+    {
+      "id": "01",
+      "title": "Real-Time Customer Event Streaming Platform (Kafka\u2192Spark\u2192Cassandra)",
+      "url": "https://github.com/airscholar/e2e-data-engineering",
+      "folder": "01-realtime-customer-event-streaming-platform",
+      "stack": [
+        "Airflow",
+        "Kafka",
+        "Spark",
+        "Cassandra",
+        "Docker",
+        "Python"
+      ],
+      "use_case": "Real-Time Streaming",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 1
+    },
+    {
+      "id": "02",
+      "title": "Enterprise GCP Data Lakehouse with BigQuery, Dataflow & Cloud Composer",
+      "url": "https://github.com/GoogleCloudPlatform/data-analytics-golden-demo",
+      "folder": "02-enterprise-gcp-data-lakehouse-bigquery",
+      "stack": [
+        "GCP",
+        "BigQuery",
+        "Dataflow",
+        "Cloud Composer",
+        "Terraform",
+        "Python"
+      ],
+      "use_case": "Cloud Data Platform",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 29
+    },
+    {
+      "id": "03",
+      "title": "Scalable Data Lakehouse \u2014 Medallion Architecture with PySpark & Delta Lake",
+      "url": "https://github.com/DataWithBaraa/databricks_bootcamp_2026",
+      "folder": "03-medallion-lakehouse-pyspark-delta-lake",
+      "stack": [
+        "Databricks",
+        "PySpark",
+        "Delta Lake",
+        "Spark SQL",
+        "Unity Catalog"
+      ],
+      "use_case": "Medallion Architecture",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 0
+    },
+    {
+      "id": "04",
+      "title": "Cost-Optimized Snowflake ELT Pipeline with dbt Transformations & Airflow",
+      "url": "https://github.com/DivineSamOfficial/Snowflake-ELT-Pipeline-with-dbt-and-Airflow",
+      "folder": "04-cost-optimized-snowflake-elt-dbt-airflow",
+      "stack": [
+        "Snowflake",
+        "dbt",
+        "Airflow",
+        "Python",
+        "SQL"
+      ],
+      "use_case": "Cloud Data Warehouse",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 9
+    },
+    {
+      "id": "05",
+      "title": "Multi-Touch Marketing Attribution Model on Snowflake with Snowpark Python",
+      "url": "https://github.com/snowplow/dbt-snowplow-fractribution",
+      "folder": "05-multi-touch-marketing-attribution-snowflake",
+      "stack": [
+        "Snowflake",
+        "Snowpark",
+        "dbt",
+        "Python",
+        "BigQuery",
+        "Redshift"
+      ],
+      "use_case": "Marketing Attribution",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 0
+    },
+    {
+      "id": "06",
+      "title": "Production-Grade PySpark ETL Framework with pytest & CI/CD Patterns",
+      "url": "https://github.com/AlexIoannides/pyspark-example-project",
+      "folder": "06-production-pyspark-etl-framework-pytest",
+      "stack": [
+        "PySpark",
+        "Python",
+        "pytest",
+        "Docker",
+        "CI/CD"
+      ],
+      "use_case": "PySpark Engineering",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 0
+    },
+    {
+      "id": "07",
+      "title": "Multi-Source SaaS Revenue Data Warehouse with dbt & Multi-Touch Attribution",
+      "url": "https://github.com/rittmananalytics/ra_data_warehouse",
+      "folder": "07-multisource-saas-revenue-warehouse-dbt",
+      "stack": [
+        "dbt",
+        "BigQuery",
+        "Snowflake",
+        "Python",
+        "SQL"
+      ],
+      "use_case": "SaaS Analytics",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 7
+    },
+    {
+      "id": "08",
+      "title": "Enterprise DE Platform Template \u2014 IaC, CI/CD, Airflow DAGs & Quality Gates",
+      "url": "https://github.com/josephmachado/data_engineering_project_template",
+      "folder": "08-enterprise-de-platform-iac-cicd-airflow",
+      "stack": [
+        "Airflow",
+        "dbt",
+        "Python",
+        "Terraform",
+        "pytest",
+        "Docker"
+      ],
+      "use_case": "Platform Engineering",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 0
+    },
+    {
+      "id": "09",
+      "url": "https://github.com/xikitoptr/ELT_e-commerce",
+      "folder": "09-ecommerce-medallion-lakehouse-snowflake-dbt",
+      "title": "E-Commerce Data Lakehouse \u2014 Medallion Architecture on Snowflake & dbt",
+      "stack": [
+        "Snowflake",
+        "dbt",
+        "Fivetran",
+        "SQL",
+        "Python"
+      ],
+      "use_case": "E-Commerce Analytics",
+      "status": "failed",
+      "git_artifacts_removed": 0,
+      "assets_consolidated": 0
+    },
+    {
+      "id": "10",
+      "title": "Real-Time Brand Sentiment Analytics \u2014 Spark Streaming, Kafka & Elasticsearch",
+      "url": "https://github.com/airscholar/RealtimeStreamingEngineering",
+      "folder": "10-realtime-sentiment-analytics-spark-kafka-elasticsearch",
+      "stack": [
+        "Spark",
+        "Kafka",
+        "Elasticsearch",
+        "Python",
+        "OpenAI API"
+      ],
+      "use_case": "Streaming Analytics",
+      "status": "success",
+      "git_artifacts_removed": 1,
+      "assets_consolidated": 0
+    }
+  ]
+}
