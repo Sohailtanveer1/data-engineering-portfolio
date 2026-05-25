@@ -478,9 +478,9 @@ I'd like to hear about it.
 
 **📧 [sohailtanveerforjobs@gmail.com](mailto:sohailtanveerforjobs@gmail.com)**
 
-**🔗 [Connect on LinkedIn](https://linkedin.com/in/YOUR_HANDLE)**
+**🔗 [Connect on LinkedIn](https://www.linkedin.com/in/mdsohailtanveer/)**
 
-**📅 [Book a 30-min Discovery Call](https://calendly.com/YOUR_HANDLE)**
+**📅 [Book a 30-min Discovery Call](https://cal.com/sohail-data-expert/free-discovery-call)**
 
 *I respond to every serious enquiry within 24 hours.*
 
