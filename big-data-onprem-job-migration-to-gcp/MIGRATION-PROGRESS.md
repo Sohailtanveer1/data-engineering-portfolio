@@ -31,9 +31,9 @@ placeholder text.
 | 17 | `17-performance/` | ✅ Complete | 2026-07-12 | Shuffle, partition, broadcast joins, AQE, caching, skew handling, executor sizing/dynamic allocation, Dataproc-specific tuning |
 | 18 | `18-monitoring/` | ✅ Complete | 2026-07-12 | Logging architecture, dashboards, alerting, error reporting, SLA dashboards, on-call/escalation |
 | 19 | `19-cost-optimization/` | ✅ Complete | 2026-07-12 | Cost baseline/attribution, compute/storage optimization, scheduling, rightsizing review, budget monitoring |
-| 20 | `20-uat/` | 🚧 Pending | 2026-07-12 | |
-| 21 | `21-cutover/` | 🚧 Pending | 2026-07-12 | |
-| 22 | `22-hypercare/` | 🚧 Pending | 2026-07-12 | |
+| 20 | `20-uat/` | ✅ Complete | 2026-07-12 | Acceptance criteria, execution checklist, business sign-off process, issue tracking |
+| 21 | `21-cutover/` | ✅ Complete | 2026-07-12 | Go-live plan, command center, communication plan, freeze plan, deployment sequence, rollback plan, post-cutover validation |
+| 22 | `22-hypercare/` | ✅ Complete | 2026-07-12 | Elevated monitoring plan, issue management, knowledge transfer, support runbook index, post-implementation review, lessons learned/closeout |
 | — | `architecture/` | 🚧 Pending | 2026-07-12 | |
 | — | `diagrams/` | 🚧 Pending | 2026-07-12 | |
 | — | `terraform/` | 🚧 Pending | 2026-07-12 | |
