@@ -1,0 +1,12 @@
+# Job-level config for pricing_nightly_batch — qa environment.
+# See dev.yaml for field documentation.
+
+pricing:
+  input_path: "gs://acme-qa-pricing-raw/daily_price_snapshot/"
+  zone_lookup_path: "gs://acme-qa-pricing-raw/zone_lookup/"
+  output_path: "gs://acme-qa-pricing-curated/daily_price_snapshot/"
+  discount_cap_percent: 40
+  db_password: "secret://pricing-db-password-qa"
+
+spark:
+  shuffle_partitions: 100

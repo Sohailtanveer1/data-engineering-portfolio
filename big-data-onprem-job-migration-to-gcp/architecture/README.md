@@ -1,17 +1,29 @@
 # architecture — Cross-Cutting Architecture
 
-> **Status:** 🚧 Pending build — not yet started in this migration playbook.
->
-> This folder is reserved and tracked in [`MIGRATION-PROGRESS.md`](../MIGRATION-PROGRESS.md).
-> It will be populated with full production-grade documentation, in the same
-> depth and structure as [`00-project-overview/`](../00-project-overview/README.md),
-> when its build task is picked up.
->
-> Do not treat the absence of content here as "not needed" — every folder in
-> this repository is in scope for the complete on-prem-to-GCP migration
-> playbook described in the root [`README.md`](../README.md).
+## Purpose
 
-## What will live here
+Architecture views that span multiple phases and don't belong to any
+single one — a system context view (this platform in relation to
+everything around it) and an end-to-end data flow view. Detailed,
+phase-specific architecture (compute, storage, security, network) lives
+in [`04-target-architecture/`](../04-target-architecture/README.md); this
+folder holds the "zoom out" views that tie those together.
 
-See the root [README.md](../README.md#repository-structure) for this folder's
-scope and the phase description in the master plan.
+## Owner
+
+Migration Program Lead / Platform Engineering.
+
+## Contents
+
+| Document | Shows |
+|---|---|
+| [`system-context-diagram.md`](system-context-diagram.md) | This platform's boundary and every external system it touches — on-prem systems staying in place, GCP services, and downstream consumers |
+| [`data-flow-diagram.md`](data-flow-diagram.md) | End-to-end data flow across every domain, from source system through raw/curated/archive zones to consumption |
+
+## Relationship to `04-target-architecture/`
+
+| This Folder | `04-target-architecture/` |
+|---|---|
+| Cross-domain, whole-platform views | Per-concern design (compute, storage, security, network) |
+| Built once, updated when the platform's external boundary changes | Built once per concern, referenced by execution phases |
+| Audience: anyone needing the big picture (new team members, stakeholders) | Audience: engineers implementing a specific concern |

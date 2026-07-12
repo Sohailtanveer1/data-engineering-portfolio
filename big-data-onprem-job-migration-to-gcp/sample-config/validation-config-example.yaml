@@ -1,0 +1,32 @@
+# Validation engine config for pricing.daily_price_snapshot.
+# See 16-data-validation/01-validation-framework-architecture.md and
+# scripts/reconcile_table.py, which consumes exactly this config shape.
+
+table: pricing.daily_price_snapshot
+target_platform: bigquery
+schedule: post_job_run
+severity_on_failure: critical  # Tier 1 table
+
+checks:
+  - type: row_count
+    tolerance: 0
+
+  - type: aggregate
+    column: base_price
+    function: sum
+    tolerance: 0.01  # floating-point representation only, per 16-data-validation/02-count-and-checksum-validation.md
+
+  - type: null_check
+    columns: [sku, base_price, discount_percent]
+    expected_null_count: 0
+
+  - type: duplicate_check
+    key_columns: [sku, dt]
+
+  - type: business_rule
+    rule: discount_percent_within_cap
+    sql: >
+      SELECT COUNT(*) FROM pricing.daily_price_snapshot
+      WHERE discount_percent > 40
+    params:
+      max_discount_percent: 40

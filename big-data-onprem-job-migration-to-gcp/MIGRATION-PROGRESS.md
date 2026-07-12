@@ -34,19 +34,19 @@ placeholder text.
 | 20 | `20-uat/` | ✅ Complete | 2026-07-12 | Acceptance criteria, execution checklist, business sign-off process, issue tracking |
 | 21 | `21-cutover/` | ✅ Complete | 2026-07-12 | Go-live plan, command center, communication plan, freeze plan, deployment sequence, rollback plan, post-cutover validation |
 | 22 | `22-hypercare/` | ✅ Complete | 2026-07-12 | Elevated monitoring plan, issue management, knowledge transfer, support runbook index, post-implementation review, lessons learned/closeout |
-| — | `architecture/` | 🚧 Pending | 2026-07-12 | |
-| — | `diagrams/` | 🚧 Pending | 2026-07-12 | |
+| — | `architecture/` | ✅ Complete | 2026-07-12 | System context diagram, end-to-end data flow diagram |
+| — | `diagrams/` | ✅ Complete | 2026-07-12 | Full repository-wide Mermaid diagram index |
 | — | `terraform/` | ✅ Complete | 2026-07-12 | 4 reusable modules (gcs-bucket, iam-service-account, kms-keyring, dataproc-cluster) + working dev environment composition (brace-balance verified) |
 | — | `scripts/` | ✅ Complete | 2026-07-12 | 4 working scripts (storage validation, table reconciliation, DAG best-practices checker, version determiner) — syntax + smoke tested |
-| — | `templates/` | 🚧 Pending | 2026-07-12 | |
-| — | `sample-config/` | 🚧 Pending | 2026-07-12 | |
-| — | `sample-code/` | 🚧 Pending | 2026-07-12 | |
+| — | `templates/` | ✅ Complete | 2026-07-12 | Change request, meeting notes, status report, risk register entry templates |
+| — | `sample-config/` | ✅ Complete | 2026-07-12 | Per-env job config YAML, validation config, Dataproc cluster JSON — all syntax-verified |
+| — | `sample-code/` | ✅ Complete | 2026-07-12 | Init action script, Hive-to-BigQuery DDL migration example |
 | — | `ci-cd/` | ✅ Complete | 2026-07-12 | Branching strategy, pipeline architecture, Spark/Terraform/DAG pipelines, release strategy + 3 working GitHub Actions workflows (YAML-verified) |
-| — | `documentation/` | 🚧 Pending | 2026-07-12 | |
-| — | `checklists/` | 🚧 Pending | 2026-07-12 | |
-| — | `runbooks/` | 🚧 Pending | 2026-07-12 | |
-| — | `decisions/` | 🚧 Pending | 2026-07-12 | |
-| — | `logs/` | 🚧 Pending | 2026-07-12 | |
+| — | `documentation/` | ✅ Complete | 2026-07-12 | Developer/onboarding/support guides, full risk register, issue tracker process, project plan |
+| — | `checklists/` | ✅ Complete | 2026-07-12 | Production readiness checklist, master migration checklist |
+| — | `runbooks/` | ✅ Complete | 2026-07-12 | Job failure, validation failure, orphaned cluster, rollback execution runbooks |
+| — | `decisions/` | ✅ Complete | 2026-07-12 | ADR template + 4 full ADRs (env isolation, ephemeral clusters, warehouse framework, Secret Manager) |
+| — | `logs/` | ✅ Complete | 2026-07-12 | Execution log process + entry template |
 
 ## Build order
 

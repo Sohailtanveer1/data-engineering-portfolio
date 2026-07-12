@@ -1,17 +1,22 @@
 # checklists — Cross-Phase Checklists
 
-> **Status:** 🚧 Pending build — not yet started in this migration playbook.
->
-> This folder is reserved and tracked in [`MIGRATION-PROGRESS.md`](../MIGRATION-PROGRESS.md).
-> It will be populated with full production-grade documentation, in the same
-> depth and structure as [`00-project-overview/`](../00-project-overview/README.md),
-> when its build task is picked up.
->
-> Do not treat the absence of content here as "not needed" — every folder in
-> this repository is in scope for the complete on-prem-to-GCP migration
-> playbook described in the root [`README.md`](../README.md).
+## Purpose
 
-## What will live here
+Master, consolidated checklists that pull together gates from multiple
+phase folders — distinct from the many phase-specific execution
+checklists already embedded within individual phases (e.g.,
+[`05-storage-migration/08-migration-execution-checklist.md`](../05-storage-migration/08-migration-execution-checklist.md),
+[`14-job-migration/07-production-deployment-checklist.md`](../14-job-migration/07-production-deployment-checklist.md)).
+These are used when someone needs the full, cross-cutting picture rather
+than a single phase's slice of it.
 
-See the root [README.md](../README.md#repository-structure) for this folder's
-scope and the phase description in the master plan.
+## Owner
+
+Migration Program Lead.
+
+## Contents
+
+| Checklist | Use When |
+|---|---|
+| [`production-readiness-checklist.md`](production-readiness-checklist.md) | Confirming a GCP environment is genuinely ready for production data, consolidating gates from `10-security`, `11-network`, `12-cluster-design`, `13-infrastructure`, `18-monitoring` |
+| [`migration-checklist.md`](migration-checklist.md) | The master, single-page view of every gate a job passes through end-to-end, for a quick reference without navigating every individual phase checklist |

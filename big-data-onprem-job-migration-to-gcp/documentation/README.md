@@ -1,17 +1,27 @@
-# documentation — Program Documentation (ADRs, Guides, Registers)
+# documentation — Program Documentation
 
-> **Status:** 🚧 Pending build — not yet started in this migration playbook.
->
-> This folder is reserved and tracked in [`MIGRATION-PROGRESS.md`](../MIGRATION-PROGRESS.md).
-> It will be populated with full production-grade documentation, in the same
-> depth and structure as [`00-project-overview/`](../00-project-overview/README.md),
-> when its build task is picked up.
->
-> Do not treat the absence of content here as "not needed" — every folder in
-> this repository is in scope for the complete on-prem-to-GCP migration
-> playbook described in the root [`README.md`](../README.md).
+## Purpose
 
-## What will live here
+The program-level reference documentation that doesn't belong to a single
+phase — guides for different audiences (new engineers, developers,
+support staff), the full risk register, issue tracking process, and the
+overall project plan. Architecture Decision Records live in
+[`decisions/`](../decisions/README.md) (a dedicated folder given their
+distinct format and lifecycle); execution checklists live in
+[`checklists/`](../checklists/README.md); operational runbooks live in
+[`runbooks/`](../runbooks/README.md).
 
-See the root [README.md](../README.md#repository-structure) for this folder's
-scope and the phase description in the master plan.
+## Owner
+
+Migration Program Lead.
+
+## Contents
+
+| Document | Audience |
+|---|---|
+| [`developer-guide.md`](developer-guide.md) | Engineers writing/migrating job code |
+| [`onboarding-guide.md`](onboarding-guide.md) | Anyone new joining the migration program |
+| [`support-guide.md`](support-guide.md) | Operations/support staff post-hypercare |
+| [`risk-register.md`](risk-register.md) | Full, actively-managed risk register (the source [`00-project-overview/07-risk-register-summary.md`](../00-project-overview/07-risk-register-summary.md) summarizes from) |
+| [`issue-tracker.md`](issue-tracker.md) | Issue tracking process and format |
+| [`project-plan.md`](project-plan.md) | Overall program plan, consolidating phase timelines |

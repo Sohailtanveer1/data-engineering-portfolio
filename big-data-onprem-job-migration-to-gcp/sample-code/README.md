@@ -1,17 +1,30 @@
 # sample-code — Sample Code References
 
-> **Status:** 🚧 Pending build — not yet started in this migration playbook.
->
-> This folder is reserved and tracked in [`MIGRATION-PROGRESS.md`](../MIGRATION-PROGRESS.md).
-> It will be populated with full production-grade documentation, in the same
-> depth and structure as [`00-project-overview/`](../00-project-overview/README.md),
-> when its build task is picked up.
->
-> Do not treat the absence of content here as "not needed" — every folder in
-> this repository is in scope for the complete on-prem-to-GCP migration
-> playbook described in the root [`README.md`](../README.md).
+## Purpose
 
-## What will live here
+Working code samples that don't belong inside a specific phase folder's
+`examples/` subdirectory because they're cross-cutting reference material.
+The primary, most extensive code examples live inside their owning
+phases:
 
-See the root [README.md](../README.md#repository-structure) for this folder's
-scope and the phase description in the master plan.
+- **Spark job / shared library patterns** — see
+  [`07-spark-migration/examples/`](../07-spark-migration/examples/README.md)
+  (ConfigLoader, SparkSessionFactory, PipelineBuilder, retry decorator, a
+  complete job, and its tests).
+- **Composer DAGs** — see
+  [`09-composer-migration/examples/`](../09-composer-migration/examples/README.md)
+  (a production DAG and a dynamic DAG factory).
+
+This folder holds the remaining infrastructure-adjacent code samples
+referenced elsewhere that don't fit either of those.
+
+## Owner
+
+Platform Engineering.
+
+## Files
+
+| File | Referenced From |
+|---|---|
+| [`init-actions/install-monitoring-agent.sh`](init-actions/install-monitoring-agent.sh) | [`12-cluster-design/07-initialization-actions-and-custom-images.md`](../12-cluster-design/07-initialization-actions-and-custom-images.md) |
+| [`hive-ddl-migration-example.sql`](hive-ddl-migration-example.sql) | [`08-hive-migration/01-metastore-migration-strategy.md`](../08-hive-migration/01-metastore-migration-strategy.md), [`08-hive-migration/05-view-migration.md`](../08-hive-migration/05-view-migration.md) |

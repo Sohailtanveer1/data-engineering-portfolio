@@ -1,0 +1,58 @@
+{
+  "_comment": "Illustrative raw Dataproc cluster config shape underlying terraform/modules/dataproc-cluster/. See 12-cluster-design/02-node-sizing-and-machine-types.md for sizing rationale.",
+  "clusterName": "pricing-nightly-prod",
+  "config": {
+    "gceClusterConfig": {
+      "subnetworkUri": "projects/acme-data-platform-prod/regions/us-central1/subnetworks/dataproc-subnet",
+      "internalIpOnly": true,
+      "serviceAccount": "svc-pricing-etl@acme-data-platform-prod.iam.gserviceaccount.com",
+      "serviceAccountScopes": [
+        "https://www.googleapis.com/auth/cloud-platform"
+      ]
+    },
+    "masterConfig": {
+      "numInstances": 1,
+      "machineTypeUri": "n2-standard-4",
+      "diskConfig": {
+        "bootDiskType": "pd-standard",
+        "bootDiskSizeGb": 100
+      }
+    },
+    "workerConfig": {
+      "numInstances": 4,
+      "machineTypeUri": "n2-standard-16",
+      "diskConfig": {
+        "bootDiskType": "pd-ssd",
+        "bootDiskSizeGb": 200
+      }
+    },
+    "secondaryWorkerConfig": {
+      "numInstances": 0,
+      "isPreemptible": true,
+      "preemptibility": "SPOT"
+    },
+    "autoscalingConfig": {
+      "policyUri": "projects/acme-data-platform-prod/regions/us-central1/autoscalingPolicies/pricing-nightly-prod-autoscaling"
+    },
+    "softwareConfig": {
+      "imageVersion": "2.2-debian12",
+      "properties": {
+        "spark:spark.sql.adaptive.enabled": "true",
+        "spark:spark.sql.adaptive.coalescePartitions.enabled": "true",
+        "spark:spark.sql.adaptive.skewJoin.enabled": "true",
+        "dataproc:dataproc.enhanced-optional-execution.enabled": "true"
+      }
+    },
+    "endpointConfig": {
+      "enableHttpPortAccess": false
+    }
+  },
+  "labels": {
+    "managed_by": "terraform",
+    "environment": "prod",
+    "data_domain": "pricing",
+    "criticality_tier": "1",
+    "cost_center": "data-platform",
+    "job_family": "pricing-nightly"
+  }
+}

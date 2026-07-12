@@ -1,17 +1,23 @@
 # sample-config — Sample Configuration Files
 
-> **Status:** 🚧 Pending build — not yet started in this migration playbook.
->
-> This folder is reserved and tracked in [`MIGRATION-PROGRESS.md`](../MIGRATION-PROGRESS.md).
-> It will be populated with full production-grade documentation, in the same
-> depth and structure as [`00-project-overview/`](../00-project-overview/README.md),
-> when its build task is picked up.
->
-> Do not treat the absence of content here as "not needed" — every folder in
-> this repository is in scope for the complete on-prem-to-GCP migration
-> playbook described in the root [`README.md`](../README.md).
+## Purpose
 
-## What will live here
+Working example configuration files referenced throughout this
+repository's documentation — the actual YAML/JSON, not just a description
+of its shape.
 
-See the root [README.md](../README.md#repository-structure) for this folder's
-scope and the phase description in the master plan.
+## Owner
+
+Platform Engineering.
+
+## Files
+
+| File | Referenced From |
+|---|---|
+| [`pricing-job-config/dev.yaml`](pricing-job-config/dev.yaml), [`qa.yaml`](pricing-job-config/qa.yaml), [`stage.yaml`](pricing-job-config/stage.yaml), [`prod.yaml`](pricing-job-config/prod.yaml) | [`07-spark-migration/05-configuration-management-and-secrets.md`](../07-spark-migration/05-configuration-management-and-secrets.md) — the `ConfigLoader` input per environment |
+| [`validation-config-example.yaml`](validation-config-example.yaml) | [`16-data-validation/01-validation-framework-architecture.md`](../16-data-validation/01-validation-framework-architecture.md) — a real, complete validation engine config |
+| [`dataproc-cluster-config-example.json`](dataproc-cluster-config-example.json) | [`12-cluster-design/`](../12-cluster-design/README.md) — the raw Dataproc cluster config shape underlying the Terraform module in [`terraform/modules/dataproc-cluster/`](../terraform/modules/dataproc-cluster) |
+
+These files are meant to be copied and adapted per job/environment, not
+used verbatim — every placeholder value (`<company>`, `<project-id>`)
+must be replaced with real values before use.

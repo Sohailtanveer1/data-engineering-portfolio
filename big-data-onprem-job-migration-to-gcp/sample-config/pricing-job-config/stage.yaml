@@ -1,0 +1,13 @@
+# Job-level config for pricing_nightly_batch — stage environment.
+# Production-representative volume for cutover rehearsal and performance testing.
+# See dev.yaml for field documentation.
+
+pricing:
+  input_path: "gs://acme-stage-pricing-raw/daily_price_snapshot/"
+  zone_lookup_path: "gs://acme-stage-pricing-raw/zone_lookup/"
+  output_path: "gs://acme-stage-pricing-curated/daily_price_snapshot/"
+  discount_cap_percent: 40
+  db_password: "secret://pricing-db-password-stage"
+
+spark:
+  shuffle_partitions: 200
