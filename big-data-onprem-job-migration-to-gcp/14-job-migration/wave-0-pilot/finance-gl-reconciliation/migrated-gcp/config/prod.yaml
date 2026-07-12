@@ -1,0 +1,11 @@
+# finance_gl_reconciliation has no Spark-side config (no Dataproc cluster
+# involved) — this file exists for the project/dataset values referenced
+# by the Composer DAG and the BigQuery SQL, per
+# 07-spark-migration/05-configuration-management-and-secrets.md, applied
+# here even though the job isn't a Spark job.
+
+finance:
+  project_id: "acme-data-platform-prod"
+  dataset: "finance_prod"
+  gl_entries_table: "gl_entries_raw"
+  reconciliation_table: "gl_reconciliation_monthly"

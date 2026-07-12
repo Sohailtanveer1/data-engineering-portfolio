@@ -1,0 +1,5 @@
+finance:
+  project_id: "acme-data-platform-dev"
+  dataset: "finance_dev"
+  gl_entries_table: "gl_entries_raw"
+  reconciliation_table: "gl_reconciliation_monthly"

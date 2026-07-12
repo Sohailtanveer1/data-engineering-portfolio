@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finance-gl-reconciliation"
+version = "1.0.0"
+description = "Migrated GCP version of the on-prem finance_gl_reconciliation job. See ../migration-record.md."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "google-cloud-bigquery>=3.11",  # only needed for the real BigQueryReconciliationClient, not for tests
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

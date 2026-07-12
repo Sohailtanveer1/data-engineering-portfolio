@@ -1,0 +1,47 @@
+<!--
+  finance_gl_coordinator.xml — ON-PREM ORIGINAL Oozie coordinator.
+  Monthly, month-end+1 at 05:00 — hard SOX-relevant deadline, per
+  01-discovery/inventories/01-sla-inventory.md.
+-->
+<coordinator-app name="finance_gl_coordinator"
+                  frequency="${coord:months(1)}"
+                  start="2019-02-01T05:00Z" end="2030-12-31T05:00Z"
+                  timezone="America/Chicago"
+                  xmlns="uri:oozie:coordinator:0.5">
+  <action>
+    <workflow>
+      <app-path>${workflowAppRoot}/finance_gl_workflow.xml</app-path>
+    </workflow>
+  </action>
+</coordinator-app>
+
+<!--
+  finance_gl_workflow.xml (referenced workflow, inlined here for
+  completeness):
+
+  <workflow-app name="finance_gl_workflow" xmlns="uri:oozie:workflow:0.5">
+    <start to="run-gl-reconciliation"/>
+    <action name="run-gl-reconciliation">
+      <shell xmlns="uri:oozie:shell-action:0.3">
+        <exec>run_finance_gl_reconciliation.sh</exec>
+        <file>${workflowAppRoot}/run_finance_gl_reconciliation.sh#run_finance_gl_reconciliation.sh</file>
+      </shell>
+      <ok to="end"/>
+      <error to="send-failure-email"/>
+    </action>
+    <action name="send-failure-email">
+      <email xmlns="uri:oozie:email-action:0.2">
+        <to>finance-data-eng@acme.com</to>
+        <subject>finance_gl_workflow FAILED</subject>
+      </email>
+      <ok to="fail"/>
+      <error to="fail"/>
+    </action>
+    <kill name="fail"><message>finance_gl_workflow failed</message></kill>
+    <end name="end"/>
+  </workflow-app>
+
+  As with run_finance_gl_reconciliation.sh, note there is no balance
+  validation step in this workflow at all — "success" means only that
+  the Hive job exited zero.
+-->
