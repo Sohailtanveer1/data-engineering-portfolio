@@ -28,9 +28,9 @@ placeholder text.
 | 14 | `14-job-migration/` | ✅ Complete | 2026-07-12 | Priority matrix, wave planning, migration tracker, parallel-run strategy, execution steps, rollback, deployment checklist |
 | 15 | `15-testing/` | ✅ Complete | 2026-07-12 | Test strategy matrix, regression, smoke, end-to-end, recovery, chaos, negative, performance testing process |
 | 16 | `16-data-validation/` | ✅ Complete | 2026-07-12 | Validation framework architecture, count/checksum, aggregation, business rules, duplicate/null detection, reporting, continuous production validation |
-| 17 | `17-performance/` | 🚧 Pending | 2026-07-12 | |
-| 18 | `18-monitoring/` | 🚧 Pending | 2026-07-12 | |
-| 19 | `19-cost-optimization/` | 🚧 Pending | 2026-07-12 | |
+| 17 | `17-performance/` | ✅ Complete | 2026-07-12 | Shuffle, partition, broadcast joins, AQE, caching, skew handling, executor sizing/dynamic allocation, Dataproc-specific tuning |
+| 18 | `18-monitoring/` | ✅ Complete | 2026-07-12 | Logging architecture, dashboards, alerting, error reporting, SLA dashboards, on-call/escalation |
+| 19 | `19-cost-optimization/` | ✅ Complete | 2026-07-12 | Cost baseline/attribution, compute/storage optimization, scheduling, rightsizing review, budget monitoring |
 | 20 | `20-uat/` | 🚧 Pending | 2026-07-12 | |
 | 21 | `21-cutover/` | 🚧 Pending | 2026-07-12 | |
 | 22 | `22-hypercare/` | 🚧 Pending | 2026-07-12 | |
