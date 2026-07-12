@@ -26,8 +26,8 @@ placeholder text.
 | 12 | `12-cluster-design/` | ✅ Complete | 2026-07-12 | Topology decision, node sizing, autoscaling, preemptible strategy, HA design, governance, init actions/custom images |
 | 13 | `13-infrastructure/` | ✅ Complete | 2026-07-12 | Folder structure, backend/state, naming standards, module usage guide, environment promotion, state ops, execution checklist |
 | 14 | `14-job-migration/` | ✅ Complete | 2026-07-12 | Priority matrix, wave planning, migration tracker, parallel-run strategy, execution steps, rollback, deployment checklist |
-| 15 | `15-testing/` | 🚧 Pending | 2026-07-12 | |
-| 16 | `16-data-validation/` | 🚧 Pending | 2026-07-12 | |
+| 15 | `15-testing/` | ✅ Complete | 2026-07-12 | Test strategy matrix, regression, smoke, end-to-end, recovery, chaos, negative, performance testing process |
+| 16 | `16-data-validation/` | ✅ Complete | 2026-07-12 | Validation framework architecture, count/checksum, aggregation, business rules, duplicate/null detection, reporting, continuous production validation |
 | 17 | `17-performance/` | 🚧 Pending | 2026-07-12 | |
 | 18 | `18-monitoring/` | 🚧 Pending | 2026-07-12 | |
 | 19 | `19-cost-optimization/` | 🚧 Pending | 2026-07-12 | |
