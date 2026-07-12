@@ -1,0 +1,8 @@
+inventory:
+  staging_path: "gs://acme-dev-inventory-raw/wms_delta_staging/"
+  on_hand_table: "inventory_dev.on_hand_by_warehouse"
+  output_path: "gs://acme-dev-inventory-curated/on_hand_by_warehouse/"
+  control_table: "inventory_dev.processed_windows"
+
+spark:
+  shuffle_partitions: 20

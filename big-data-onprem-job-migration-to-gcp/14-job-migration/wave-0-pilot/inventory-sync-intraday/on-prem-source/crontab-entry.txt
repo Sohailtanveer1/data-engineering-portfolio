@@ -1,0 +1,12 @@
+# crontab entry — ON-PREM ORIGINAL, captured from edge-node-03,
+# svc_inventory_etl user crontab, during
+# 02-dependency-analysis/methodology/04-shell-script-and-cron-dependencies.md
+# discovery sweep.
+#
+# Note this job is NOT registered in Oozie at all — it was set up
+# directly via crontab by the original job author and never migrated
+# into the central scheduler, which is why it didn't initially appear in
+# 01-discovery/inventories/10-scheduler-inventory.md until the explicit
+# per-node crontab sweep required by that document's methodology.
+
+*/15 * * * * /home/svc_inventory_etl/jobs/inventory_sync_intraday/run_inventory_sync.sh
