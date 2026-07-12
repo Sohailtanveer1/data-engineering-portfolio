@@ -13,8 +13,8 @@ placeholder text.
 | — | `MIGRATION-PROGRESS.md` | ✅ Complete | 2026-07-12 | This file |
 | 00 | `00-project-overview/` | ✅ Complete | 2026-07-12 | Charter, RACI, timeline, glossary |
 | 01 | `01-discovery/` | ✅ Complete | 2026-07-12 | 8 stakeholder question sets + 12 inventories |
-| 02 | `02-dependency-analysis/` | 🚧 Pending | 2026-07-12 | |
-| 03 | `03-current-environment/` | 🚧 Pending | 2026-07-12 | |
+| 02 | `02-dependency-analysis/` | ✅ Complete | 2026-07-12 | 9 methodology docs + 3 reusable templates |
+| 03 | `03-current-environment/` | ✅ Complete | 2026-07-12 | Hadoop/YARN/Spark/Hive/storage/security/config baseline + utilization + pain points |
 | 04 | `04-target-architecture/` | 🚧 Pending | 2026-07-12 | |
 | 05 | `05-storage-migration/` | 🚧 Pending | 2026-07-12 | |
 | 06 | `06-data-migration/` | 🚧 Pending | 2026-07-12 | |
