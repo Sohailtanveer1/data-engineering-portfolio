@@ -23,9 +23,9 @@ placeholder text.
 | 09 | `09-composer-migration/` | ✅ Complete | 2026-07-12 | Oozie/cron conversion, dynamic DAG generation, best practices, monitoring/retry/alerts, config mgmt + 2 working DAG examples (syntax-verified) |
 | 10 | `10-security/` | ✅ Complete | 2026-07-12 | IAM design, service accounts, Secret Manager, KMS/encryption, audit logging, break-glass, key rotation, review checklist |
 | 11 | `11-network/` | ✅ Complete | 2026-07-12 | VPC/subnet design, firewall, private connectivity/NAT, DNS, VPN/Interconnect decision, routes/peering, execution checklist |
-| 12 | `12-cluster-design/` | 🚧 Pending | 2026-07-12 | |
-| 13 | `13-infrastructure/` | 🚧 Pending | 2026-07-12 | |
-| 14 | `14-job-migration/` | 🚧 Pending | 2026-07-12 | |
+| 12 | `12-cluster-design/` | ✅ Complete | 2026-07-12 | Topology decision, node sizing, autoscaling, preemptible strategy, HA design, governance, init actions/custom images |
+| 13 | `13-infrastructure/` | ✅ Complete | 2026-07-12 | Folder structure, backend/state, naming standards, module usage guide, environment promotion, state ops, execution checklist |
+| 14 | `14-job-migration/` | ✅ Complete | 2026-07-12 | Priority matrix, wave planning, migration tracker, parallel-run strategy, execution steps, rollback, deployment checklist |
 | 15 | `15-testing/` | 🚧 Pending | 2026-07-12 | |
 | 16 | `16-data-validation/` | 🚧 Pending | 2026-07-12 | |
 | 17 | `17-performance/` | 🚧 Pending | 2026-07-12 | |
