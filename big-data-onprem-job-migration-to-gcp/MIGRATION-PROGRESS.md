@@ -21,8 +21,8 @@ placeholder text.
 | 07 | `07-spark-migration/` | ✅ Complete | 2026-07-12 | Restructuring, version/API migration, Dataproc submission, packaging, config/secrets, logging/retry, idempotency, OOP patterns, testing strategy + 6 working code examples (syntax-verified) |
 | 08 | `08-hive-migration/` | ✅ Complete | 2026-07-12 | Metastore strategy, external/managed tables, partitions, statistics, views, UDF migration, execution runbook |
 | 09 | `09-composer-migration/` | ✅ Complete | 2026-07-12 | Oozie/cron conversion, dynamic DAG generation, best practices, monitoring/retry/alerts, config mgmt + 2 working DAG examples (syntax-verified) |
-| 10 | `10-security/` | 🚧 Pending | 2026-07-12 | |
-| 11 | `11-network/` | 🚧 Pending | 2026-07-12 | |
+| 10 | `10-security/` | ✅ Complete | 2026-07-12 | IAM design, service accounts, Secret Manager, KMS/encryption, audit logging, break-glass, key rotation, review checklist |
+| 11 | `11-network/` | ✅ Complete | 2026-07-12 | VPC/subnet design, firewall, private connectivity/NAT, DNS, VPN/Interconnect decision, routes/peering, execution checklist |
 | 12 | `12-cluster-design/` | 🚧 Pending | 2026-07-12 | |
 | 13 | `13-infrastructure/` | 🚧 Pending | 2026-07-12 | |
 | 14 | `14-job-migration/` | 🚧 Pending | 2026-07-12 | |
