@@ -16,9 +16,9 @@ placeholder text.
 | 02 | `02-dependency-analysis/` | ✅ Complete | 2026-07-12 | 9 methodology docs + 3 reusable templates |
 | 03 | `03-current-environment/` | ✅ Complete | 2026-07-12 | Hadoop/YARN/Spark/Hive/storage/security/config baseline + utilization + pain points |
 | 04 | `04-target-architecture/` | ✅ Complete | 2026-07-12 | Full system design, landing zone, compute/storage/warehouse/orchestration/security/network architecture, ADR log, pain-point traceability |
-| 05 | `05-storage-migration/` | 🚧 Pending | 2026-07-12 | |
-| 06 | `06-data-migration/` | 🚧 Pending | 2026-07-12 | |
-| 07 | `07-spark-migration/` | 🚧 Pending | 2026-07-12 | |
+| 05 | `05-storage-migration/` | ✅ Complete | 2026-07-12 | Strategy, DistCp/STS runbooks, incremental sync, checksum validation, permissions mapping, rollback, execution checklist |
+| 06 | `06-data-migration/` | ✅ Complete | 2026-07-12 | Historical/incremental/CDC/snapshot strategy, partitioning, format standard, reconciliation, execution runbook |
+| 07 | `07-spark-migration/` | ✅ Complete | 2026-07-12 | Restructuring, version/API migration, Dataproc submission, packaging, config/secrets, logging/retry, idempotency, OOP patterns, testing strategy + 6 working code examples (syntax-verified) |
 | 08 | `08-hive-migration/` | 🚧 Pending | 2026-07-12 | |
 | 09 | `09-composer-migration/` | 🚧 Pending | 2026-07-12 | |
 | 10 | `10-security/` | 🚧 Pending | 2026-07-12 | |
