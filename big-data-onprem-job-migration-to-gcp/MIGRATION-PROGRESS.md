@@ -15,7 +15,7 @@ placeholder text.
 | 01 | `01-discovery/` | ✅ Complete | 2026-07-12 | 8 stakeholder question sets + 12 inventories |
 | 02 | `02-dependency-analysis/` | ✅ Complete | 2026-07-12 | 9 methodology docs + 3 reusable templates |
 | 03 | `03-current-environment/` | ✅ Complete | 2026-07-12 | Hadoop/YARN/Spark/Hive/storage/security/config baseline + utilization + pain points |
-| 04 | `04-target-architecture/` | 🚧 Pending | 2026-07-12 | |
+| 04 | `04-target-architecture/` | ✅ Complete | 2026-07-12 | Full system design, landing zone, compute/storage/warehouse/orchestration/security/network architecture, ADR log, pain-point traceability |
 | 05 | `05-storage-migration/` | 🚧 Pending | 2026-07-12 | |
 | 06 | `06-data-migration/` | 🚧 Pending | 2026-07-12 | |
 | 07 | `07-spark-migration/` | 🚧 Pending | 2026-07-12 | |
