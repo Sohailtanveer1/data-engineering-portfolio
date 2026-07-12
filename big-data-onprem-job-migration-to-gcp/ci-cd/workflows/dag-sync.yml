@@ -1,0 +1,117 @@
+name: Composer DAG Validate & Sync
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["dags/**"]
+  push:
+    branches: [main]
+    paths: ["dags/**"]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  lint-and-parse-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: |
+          pip install black flake8 apache-airflow==2.7.3 apache-airflow-providers-google
+      - name: Check formatting
+        run: black --check dags/
+      - name: Lint
+        run: flake8 dags/
+      - name: DAG parse validation
+        run: |
+          for f in $(find dags/ -name "*_dag.py" -o -name "*_factory.py"); do
+            echo "Validating $f"
+            python -c "import importlib.util; spec = importlib.util.spec_from_file_location('m', '$f'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)"
+          done
+
+  best-practices-check:
+    runs-on: ubuntu-latest
+    needs: [lint-and-parse-check]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Run best-practices checklist
+        # Custom script checking naming convention, owner/SLA declared,
+        # no top-level I/O — per 09-composer-migration/04-dag-best-practices.md
+        run: python scripts/check_dag_best_practices.py dags/
+
+  unit-test:
+    runs-on: ubuntu-latest
+    needs: [lint-and-parse-check]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install pytest apache-airflow==2.7.3
+      - name: Run custom operator/callable unit tests
+        run: pytest dags/tests/unit/ -v
+
+  end-to-end-test:
+    runs-on: ubuntu-latest
+    needs: [best-practices-check, unit-test]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Sync to qa Composer for E2E test
+        run: |
+          gsutil rsync -r dags/ "gs://${{ vars.QA_COMPOSER_BUCKET }}/dags/"
+      - name: Trigger E2E test DAG run
+        run: |
+          gcloud composer environments run "${{ vars.QA_COMPOSER_ENV }}" \
+            --location "${{ vars.GCP_REGION }}" \
+            dags trigger -- "${{ github.event.repository.name }}_e2e_test"
+
+  sync-dev:
+    runs-on: ubuntu-latest
+    needs: [best-practices-check, unit-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Sync DAGs to dev Composer environment
+        run: |
+          gsutil rsync -r -d dags/ "gs://${{ vars.DEV_COMPOSER_BUCKET }}/dags/"
+
+  # qa/stage/prod sync is manually triggered, per environment promotion
+  # gates — see 13-infrastructure/05-environment-promotion.md
+  sync-promoted-environment:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Sync DAGs
+        run: |
+          gsutil rsync -r -d dags/ "gs://${{ vars[format('{0}_COMPOSER_BUCKET', github.event.inputs.environment)] }}/dags/"

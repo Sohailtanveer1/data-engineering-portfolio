@@ -1,0 +1,150 @@
+name: Terraform CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["terraform/**"]
+  push:
+    branches: [main]
+    paths: ["terraform/**"]
+  schedule:
+    # Daily drift detection — see 04-terraform-pipeline.md
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write  # to post plan output as a PR comment
+
+env:
+  TF_VERSION: "1.7.0"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - name: Format check
+        run: terraform fmt -check -recursive terraform/
+      - name: Validate all modules
+        run: |
+          for dir in terraform/modules/*/; do
+            terraform -chdir="$dir" init -backend=false
+            terraform -chdir="$dir" validate
+          done
+
+  lint-and-security-scan:
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: terraform-linters/setup-tflint@v4
+      - run: tflint --recursive terraform/
+      - name: Security scan (tfsec)
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform/
+
+  plan:
+    runs-on: ubuntu-latest
+    needs: [lint-and-security-scan]
+    if: github.event_name == 'pull_request'
+    strategy:
+      matrix:
+        environment: [dev, qa, stage, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - name: Terraform plan
+        working-directory: terraform/environments/${{ matrix.environment }}
+        run: |
+          terraform init
+          terraform plan -no-color -out=tfplan | tee plan_output.txt
+      - name: Post plan as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('terraform/environments/${{ matrix.environment }}/plan_output.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Terraform Plan — ${{ matrix.environment }}\n\`\`\`\n${plan.slice(0, 60000)}\n\`\`\``
+            });
+
+  apply-dev:
+    runs-on: ubuntu-latest
+    needs: [lint-and-security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - name: Terraform apply (dev — automatic)
+        working-directory: terraform/environments/dev
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+  # qa/stage/prod applies are triggered manually via workflow_dispatch,
+  # per 13-infrastructure/05-environment-promotion.md — intentionally not
+  # automatic, requiring a deliberate promotion decision.
+  apply-promoted-environment:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment }}  # GitHub Environments provide required-reviewer approval gates
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - name: Terraform apply
+        working-directory: terraform/environments/${{ github.event.inputs.environment }}
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+  drift-detection:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    strategy:
+      matrix:
+        environment: [dev, qa, stage, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
+      - name: Check for drift
+        working-directory: terraform/environments/${{ matrix.environment }}
+        run: |
+          terraform init
+          terraform plan -detailed-exitcode -no-color || \
+            (echo "::warning::Drift detected in ${{ matrix.environment }}" && exit 0)

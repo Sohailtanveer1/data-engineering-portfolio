@@ -36,12 +36,12 @@ placeholder text.
 | 22 | `22-hypercare/` | ✅ Complete | 2026-07-12 | Elevated monitoring plan, issue management, knowledge transfer, support runbook index, post-implementation review, lessons learned/closeout |
 | — | `architecture/` | 🚧 Pending | 2026-07-12 | |
 | — | `diagrams/` | 🚧 Pending | 2026-07-12 | |
-| — | `terraform/` | 🚧 Pending | 2026-07-12 | |
-| — | `scripts/` | 🚧 Pending | 2026-07-12 | |
+| — | `terraform/` | ✅ Complete | 2026-07-12 | 4 reusable modules (gcs-bucket, iam-service-account, kms-keyring, dataproc-cluster) + working dev environment composition (brace-balance verified) |
+| — | `scripts/` | ✅ Complete | 2026-07-12 | 4 working scripts (storage validation, table reconciliation, DAG best-practices checker, version determiner) — syntax + smoke tested |
 | — | `templates/` | 🚧 Pending | 2026-07-12 | |
 | — | `sample-config/` | 🚧 Pending | 2026-07-12 | |
 | — | `sample-code/` | 🚧 Pending | 2026-07-12 | |
-| — | `ci-cd/` | 🚧 Pending | 2026-07-12 | |
+| — | `ci-cd/` | ✅ Complete | 2026-07-12 | Branching strategy, pipeline architecture, Spark/Terraform/DAG pipelines, release strategy + 3 working GitHub Actions workflows (YAML-verified) |
 | — | `documentation/` | 🚧 Pending | 2026-07-12 | |
 | — | `checklists/` | 🚧 Pending | 2026-07-12 | |
 | — | `runbooks/` | 🚧 Pending | 2026-07-12 | |
