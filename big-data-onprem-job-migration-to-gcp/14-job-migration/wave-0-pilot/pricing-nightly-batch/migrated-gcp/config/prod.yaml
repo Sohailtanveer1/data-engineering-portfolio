@@ -1,0 +1,9 @@
+pricing:
+  input_path: "gs://acme-prod-pricing-raw/daily_price_snapshot/"
+  zone_lookup_path: "gs://acme-prod-pricing-raw/zone_lookup/"
+  promotions_path: "gs://acme-prod-pricing-raw/active_promotions/"
+  output_path: "gs://acme-prod-pricing-curated/daily_price_snapshot/"
+  discount_cap_percent: 40
+
+spark:
+  shuffle_partitions: 200

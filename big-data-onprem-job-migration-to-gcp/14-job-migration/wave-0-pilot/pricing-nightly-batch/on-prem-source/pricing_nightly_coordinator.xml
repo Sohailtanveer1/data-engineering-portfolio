@@ -1,0 +1,62 @@
+<!--
+  pricing_nightly_coordinator.xml — ON-PREM ORIGINAL Oozie coordinator.
+
+  Triggers the workflow daily at 01:00. Captured as-is during
+  02-dependency-analysis/methodology/05-scheduler-workflow-dependencies.md
+  review. See ../migration-record.md for how this becomes a Cloud
+  Composer DAG.
+-->
+<coordinator-app name="pricing_nightly_coordinator"
+                  frequency="${coord:days(1)}"
+                  start="2019-03-01T01:00Z" end="2030-12-31T01:00Z"
+                  timezone="America/Chicago"
+                  xmlns="uri:oozie:coordinator:0.5">
+  <action>
+    <workflow>
+      <app-path>${workflowAppRoot}/pricing_nightly_workflow.xml</app-path>
+    </workflow>
+  </action>
+</coordinator-app>
+
+<!--
+  pricing_nightly_workflow.xml (the referenced workflow — included here
+  inline for completeness; on-prem this is a separate file):
+
+  <workflow-app name="pricing_nightly_workflow" xmlns="uri:oozie:workflow:0.5">
+    <start to="run-pricing-job"/>
+
+    <action name="run-pricing-job">
+      <shell xmlns="uri:oozie:shell-action:0.3">
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <exec>run_pricing_nightly.sh</exec>
+        <file>${workflowAppRoot}/run_pricing_nightly.sh#run_pricing_nightly.sh</file>
+      </shell>
+      <ok to="end"/>
+      <error to="send-failure-email"/>
+    </action>
+
+    <action name="send-failure-email">
+      <email xmlns="uri:oozie:email-action:0.2">
+        <to>data-eng-pricing@acme.com</to>
+        <subject>pricing_nightly_workflow FAILED</subject>
+        <body>Check /var/log/pricing_jobs/ on edge-node-03 for details.</body>
+      </email>
+      <ok to="fail"/>
+      <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+      <message>pricing_nightly_workflow failed, see logs on edge-node-03</message>
+    </kill>
+    <end name="end"/>
+  </workflow-app>
+
+  Note: no data-availability precondition is expressed in Oozie itself —
+  the 01:00 start time is simply assumed to be late enough that the
+  upstream inventory_sync_intraday job's last run of the prior day has
+  completed. This assumption is undocumented anywhere except tribal
+  knowledge, confirmed during 01-discovery/questions/06-developers.md
+  interview, and is exactly the kind of informal dependency that gets
+  replaced with an explicit GCSObjectExistsSensor in the migrated DAG.
+-->
