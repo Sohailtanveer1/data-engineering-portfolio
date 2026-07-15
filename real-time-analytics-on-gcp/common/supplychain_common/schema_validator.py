@@ -4,11 +4,12 @@ kafka/schemas/ (not this package) is the source of truth for the contracts —
 this module only loads and applies them, so producer, consumer, bridge, and
 the Dataflow pipeline can never drift into checking slightly different rules.
 """
+
 from __future__ import annotations
 
 import json
 import os
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 
 import jsonschema
@@ -44,7 +45,7 @@ _DOMAIN_TO_FILENAME = {
 }
 
 
-@lru_cache(maxsize=None)
+@cache
 def _load_validator(domain: str) -> jsonschema.protocols.Validator:
     if domain not in DOMAINS:
         raise ValueError(f"Unknown domain {domain!r}, expected one of {DOMAINS}")

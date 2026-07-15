@@ -21,6 +21,7 @@ here is clearer than trying to force everything through one generic path.
 See scripts/deploy_dataflow_pipeline.sh for the Flex Template build+launch
 that wraps this for CI/CD.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -61,7 +62,7 @@ WINDOW_SIZE_SECONDS = 60
 ALLOWED_LATENESS_SECONDS = 3600
 
 
-def build_domain_pipeline(pipeline, domain: str, opts: "PipelineArgs"):
+def build_domain_pipeline(pipeline, domain: str, opts: PipelineArgs):
     subscription = f"projects/{opts.project}/subscriptions/supplychain.{domain}.v1.dataflow-sub"
     dlq_topic = f"projects/{opts.project}/topics/supplychain.{domain}.v1.dlq"
 

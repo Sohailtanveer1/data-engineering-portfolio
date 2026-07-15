@@ -4,11 +4,13 @@ Every component (producer, consumer, bridge, Dataflow pipeline, Terraform
 variable defaults) derives topic/table names from here rather than
 hardcoding strings, so a rename is a one-line change instead of a grep-and-pray.
 """
+
 from __future__ import annotations
 
 DOMAINS = ("orders", "inventory", "shipments", "returns", "suppliers")
 
 SCHEMA_VERSION = "v1"
+
 
 # Kafka and Pub/Sub use the identical topic name — the bridge is a straight
 # passthrough, which is the point (see bridge/kafka_to_pubsub_bridge.py).

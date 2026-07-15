@@ -40,6 +40,7 @@ module "bigquery" {
   bq_location              = var.bq_location
   environment              = local.environment
   dataflow_worker_sa_email = module.iam.dataflow_worker_sa_email
+  bq_transform_sa_email    = module.iam.bq_transform_sa_email
   looker_studio_viewers    = var.looker_studio_viewers
 }
 

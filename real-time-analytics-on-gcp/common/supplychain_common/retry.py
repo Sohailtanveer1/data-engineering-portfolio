@@ -6,12 +6,14 @@ throttling, a flaky carrier API during enrichment). Not used for schema
 validation failures — those are permanent (poison messages) and retrying
 them just wastes time before they land on the DLQ anyway.
 """
+
 from __future__ import annotations
 
 import logging
 import random
 import time
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,9 @@ def call_with_backoff(
             delay = random.uniform(0, min(max_delay_seconds, base_delay_seconds * (2 ** (attempt - 1))))
             logger.warning(
                 "attempt %d/%d failed (%s); retrying in %.2fs",
-                attempt, max_attempts, exc, delay,
+                attempt,
+                max_attempts,
+                exc,
+                delay,
             )
             time.sleep(delay)

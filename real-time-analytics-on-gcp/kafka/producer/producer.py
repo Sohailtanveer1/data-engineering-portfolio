@@ -18,6 +18,7 @@ Usage:
     python producer.py --domains orders,inventory --rate 5 --duration 120
     python producer.py --domains all --rate 10 --malformed-rate 0.03
 """
+
 from __future__ import annotations
 
 import argparse
@@ -77,17 +78,28 @@ def produce_one(producer: Producer, domain: str, event: dict) -> None:
         logger.exception("giving up on event_id=%s after retries", event.get("event_id"))
 
 
-def run(domains: list[str], rate_per_sec: float, duration_seconds: float | None,
-        malformed_rate: float, duplicate_rate: float, late_rate: float,
-        bootstrap_servers: str) -> None:
+def run(
+    domains: list[str],
+    rate_per_sec: float,
+    duration_seconds: float | None,
+    malformed_rate: float,
+    duplicate_rate: float,
+    late_rate: float,
+    bootstrap_servers: str,
+) -> None:
     producer = build_producer(bootstrap_servers)
     interval = 1.0 / rate_per_sec if rate_per_sec > 0 else 0
     start = time.monotonic()
     sent = 0
     recent_by_domain: dict[str, list[dict]] = {d: [] for d in domains}
 
-    logger.info("producing to domains=%s rate=%.1f/s duration=%s bootstrap=%s",
-                domains, rate_per_sec, duration_seconds, bootstrap_servers)
+    logger.info(
+        "producing to domains=%s rate=%.1f/s duration=%s bootstrap=%s",
+        domains,
+        rate_per_sec,
+        duration_seconds,
+        bootstrap_servers,
+    )
 
     try:
         while duration_seconds is None or (time.monotonic() - start) < duration_seconds:
@@ -139,8 +151,15 @@ def main():
         if d not in DOMAINS:
             parser.error(f"unknown domain {d!r}, expected one of {DOMAINS}")
 
-    run(domains, args.rate, args.duration, args.malformed_rate, args.duplicate_rate, args.late_rate,
-        args.bootstrap_servers)
+    run(
+        domains,
+        args.rate,
+        args.duration,
+        args.malformed_rate,
+        args.duplicate_rate,
+        args.late_rate,
+        args.bootstrap_servers,
+    )
 
 
 if __name__ == "__main__":

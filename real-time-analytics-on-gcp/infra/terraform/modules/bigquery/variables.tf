@@ -20,6 +20,11 @@ variable "dataflow_worker_sa_email" {
   type = string
 }
 
+variable "bq_transform_sa_email" {
+  type        = string
+  description = "Output of the iam module — runs the Bronze -> Silver scheduled MERGE queries."
+}
+
 variable "looker_studio_viewers" {
   type        = list(string)
   description = "IAM members (e.g. \"user:you@example.com\") granted read access to the Gold dataset for Looker Studio dashboards."

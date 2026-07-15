@@ -19,6 +19,7 @@ Design choices:
   placeholder so the pipeline is runnable without a live third-party
   contract.
 """
+
 from __future__ import annotations
 
 import logging
@@ -67,7 +68,8 @@ class EnrichShipment(beam.DoFn):
         except RetriesExhausted as exc:
             logger.warning(
                 "carrier enrichment failed for shipment_id=%s after retries: %s — writing without enrichment",
-                event.get("shipment_id"), exc,
+                event.get("shipment_id"),
+                exc,
             )
             record.event["carrier_live_status"] = None
             record.event["carrier_eta"] = None

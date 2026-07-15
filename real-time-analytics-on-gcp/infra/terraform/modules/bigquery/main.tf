@@ -50,6 +50,24 @@ locals {
     { name = "_pipeline_version", type = "STRING", mode = "REQUIRED", description = "Dataflow pipeline build/version that wrote this row." },
   ]
 
+  # Silver drops raw_payload (Bronze already keeps it — no need to double
+  # the storage cost) and _pubsub_publish_time (a Bronze-only latency SLI
+  # concern); it keeps the two columns that matter for lineage/dedup.
+  silver_audit_columns = [
+    { name = "_ingested_at", type = "TIMESTAMP", mode = "REQUIRED", description = "Carried through from Bronze." },
+    { name = "_pubsub_message_id", type = "STRING", mode = "REQUIRED", description = "Carried through from Bronze — still the practical dedup key here." },
+    { name = "_pipeline_version", type = "STRING", mode = "REQUIRED", description = "Carried through from Bronze." },
+  ]
+
+  # table_id => bigquery/sql/gold/<value>.sql
+  gold_views = {
+    order_fulfillment_sla  = "order_fulfillment_sla"
+    inventory_snapshot     = "inventory_snapshot"
+    shipment_performance   = "shipment_performance"
+    return_rate_by_reason  = "return_rate_by_reason"
+    supplier_scorecard     = "supplier_scorecard"
+  }
+
   bronze_tables = {
     orders = {
       cluster_by = ["warehouse_id", "order_id"]
@@ -168,6 +186,71 @@ resource "google_bigquery_table" "bronze" {
   schema = jsonencode(concat(each.value.schema, local.audit_columns))
 }
 
+# Silver: same business schema as Bronze (same local.bronze_tables[x].schema
+# — the columns don't change between layers, only what's done to fill them),
+# minus raw_payload, plus the trimmed audit column set. Not time-partitioned
+# with require_partition_filter forced on — Silver is queried more
+# interactively by analysts and is far smaller than the 90-day Bronze
+# window, so the cost-control tradeoff that justifies forcing a filter on
+# Bronze doesn't carry the same weight here.
+resource "google_bigquery_table" "silver" {
+  for_each            = local.bronze_tables
+  project             = var.project_id
+  dataset_id          = google_bigquery_dataset.silver.dataset_id
+  table_id            = each.key
+  deletion_protection = var.environment == "prod"
+
+  time_partitioning {
+    type  = "DAY"
+    field = "event_timestamp"
+  }
+
+  clustering = each.value.cluster_by
+  schema     = jsonencode(concat(each.value.schema, local.silver_audit_columns))
+}
+
+# One scheduled query per domain, running the MERGE in bigquery/sql/silver/.
+# 30-minute cadence is a deliberate middle ground: frequent enough that
+# "real-time" dashboards built on Gold aren't stale for hours, infrequent
+# enough that BigQuery's per-query overhead doesn't dominate the cost —
+# see docs/cost-optimization.md for the actual numbers behind that choice.
+resource "google_bigquery_data_transfer_config" "silver_merge" {
+  for_each               = local.bronze_tables
+  project                = var.project_id
+  display_name           = "silver-${each.key}-merge-${var.environment}"
+  location                = var.bq_location
+  data_source_id          = "scheduled_query"
+  schedule                = "every 30 minutes"
+  destination_dataset_id  = google_bigquery_dataset.silver.dataset_id
+  service_account_name    = var.bq_transform_sa_email
+
+  params = {
+    query = file("${path.module}/../../../../bigquery/sql/silver/silver_${each.key}.sql")
+  }
+
+  depends_on = [google_bigquery_table.silver, google_bigquery_table.bronze]
+}
+
+# Gold: plain views over Silver, not materialized tables — each answers one
+# specific business question (see the comment atop each .sql file). Views
+# cost nothing to keep "fresh" (they recompute from whatever Silver's
+# latest MERGE landed) and are cheap enough at this data volume that
+# materializing them would be optimizing a cost that doesn't exist yet.
+resource "google_bigquery_table" "gold_views" {
+  for_each            = local.gold_views
+  project             = var.project_id
+  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  table_id            = each.key
+  deletion_protection = false
+
+  view {
+    query          = file("${path.module}/../../../../bigquery/sql/gold/${each.value}.sql")
+    use_legacy_sql = false
+  }
+
+  depends_on = [google_bigquery_table.silver]
+}
+
 # --- Access -----------------------------------------------------------
 
 resource "google_bigquery_dataset_iam_member" "dataflow_worker_bronze_editor" {
@@ -203,4 +286,41 @@ resource "google_project_iam_member" "gold_viewer_job_user" {
   project  = var.project_id
   role     = "roles/bigquery.jobUser"
   member   = each.value
+}
+
+# bq_transform runs the scheduled Bronze -> Silver MERGE queries: read on
+# Bronze, write on Silver, nothing else — it has no reason to touch Gold
+# (those are plain views computed at query time) or any other dataset.
+resource "google_bigquery_dataset_iam_member" "bq_transform_bronze_viewer" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.bronze.dataset_id
+  role       = "roles/bigquery.dataViewer"
+  member     = "serviceAccount:${var.bq_transform_sa_email}"
+}
+
+resource "google_bigquery_dataset_iam_member" "bq_transform_silver_editor" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.silver.dataset_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${var.bq_transform_sa_email}"
+}
+
+resource "google_project_iam_member" "bq_transform_job_user" {
+  project = var.project_id
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${var.bq_transform_sa_email}"
+}
+
+# BigQuery Data Transfer Service's own service agent needs permission to
+# mint short-lived tokens AS the bq_transform SA to actually run the
+# scheduled query under its identity — easy to miss, and the failure mode
+# (scheduled query silently never runs) doesn't point back at this cause.
+data "google_project" "current" {
+  project_id = var.project_id
+}
+
+resource "google_service_account_iam_member" "dts_impersonates_bq_transform" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.bq_transform_sa_email}"
+  role                = "roles/iam.serviceAccountTokenCreator"
+  member              = "serviceAccount:service-${data.google_project.current.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
 }

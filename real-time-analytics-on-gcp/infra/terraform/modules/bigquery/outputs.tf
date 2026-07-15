@@ -13,3 +13,11 @@ output "gold_dataset_id" {
 output "bronze_table_ids" {
   value = { for d, t in google_bigquery_table.bronze : d => t.table_id }
 }
+
+output "silver_table_ids" {
+  value = { for d, t in google_bigquery_table.silver : d => t.table_id }
+}
+
+output "gold_view_ids" {
+  value = { for d, t in google_bigquery_table.gold_views : d => t.table_id }
+}

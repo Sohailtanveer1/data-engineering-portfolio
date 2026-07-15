@@ -3,6 +3,7 @@ window and keeps distinct event_ids — the core idempotency guarantee this
 transform exists to provide (see the module docstring for why this is
 layered on top of, not a replacement for, producer-side idempotence).
 """
+
 import sys
 from pathlib import Path
 

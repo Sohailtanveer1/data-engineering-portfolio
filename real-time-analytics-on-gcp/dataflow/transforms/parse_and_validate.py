@@ -7,11 +7,12 @@ windowing or dedup — a malformed message has no reliable event_timestamp to
 window on anyway, so there's nothing correct to do with it except quarantine
 it immediately.
 """
+
 from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import apache_beam as beam
@@ -71,7 +72,7 @@ class ParseAndValidate(beam.DoFn):
         record = ParsedRecord(event, self.domain, message.message_id, publish_time)
         event_ts = datetime.fromisoformat(event["event_timestamp"])
         if event_ts.tzinfo is None:
-            event_ts = event_ts.replace(tzinfo=timezone.utc)
+            event_ts = event_ts.replace(tzinfo=UTC)
         yield pvalue.TaggedOutput(
             VALID_TAG, beam.window.TimestampedValue(record, Timestamp.from_utc_datetime(event_ts))
         )
@@ -83,6 +84,6 @@ class ParseAndValidate(beam.DoFn):
             "detail": detail,
             "raw_value": message.data.decode("utf-8", errors="replace"),
             "pubsub_message_id": message.message_id,
-            "failed_at": datetime.now(timezone.utc).isoformat(),
+            "failed_at": datetime.now(UTC).isoformat(),
             "stage": "dataflow_parse_and_validate",
         }

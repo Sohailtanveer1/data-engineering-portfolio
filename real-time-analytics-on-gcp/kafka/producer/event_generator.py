@@ -13,11 +13,12 @@ project you have to manufacture the failure modes you want to demonstrate
 handling — otherwise the DLQ and watermarking code paths are unreachable
 and untested.
 """
+
 from __future__ import annotations
 
 import random
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 WAREHOUSES = ["WH-EAST-01", "WH-EAST-02", "WH-WEST-01", "WH-CENTRAL-01"]
 SKUS = [f"SKU-{i:05d}" for i in range(1, 51)]
@@ -26,7 +27,7 @@ SUPPLIERS = [f"SUP-{i:04d}" for i in range(1, 21)]
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _envelope(source_system: str) -> dict:
@@ -42,9 +43,7 @@ def gen_order_event() -> dict:
     order_id = f"ORD-{random.randint(100000, 999999)}"
     event = {
         **_envelope("WMS-" + random.choice(WAREHOUSES)),
-        "event_type": random.choice(
-            ["ORDER_CREATED", "ORDER_UPDATED", "ORDER_CANCELLED", "ORDER_FULFILLED"]
-        ),
+        "event_type": random.choice(["ORDER_CREATED", "ORDER_UPDATED", "ORDER_CANCELLED", "ORDER_FULFILLED"]),
         "warehouse_id": random.choice(WAREHOUSES),
         "order_id": order_id,
         "customer_id": f"CUST-{random.randint(1000, 9999)}",
@@ -65,9 +64,7 @@ def gen_inventory_event() -> dict:
     delta = random.choice([-10, -5, -1, 1, 5, 20, 50])
     return {
         **_envelope("IMS-" + random.choice(WAREHOUSES)),
-        "event_type": random.choice(
-            ["STOCK_RECEIVED", "STOCK_ADJUSTED", "STOCK_RESERVED", "STOCK_RELEASED"]
-        ),
+        "event_type": random.choice(["STOCK_RECEIVED", "STOCK_ADJUSTED", "STOCK_RESERVED", "STOCK_RELEASED"]),
         "warehouse_id": random.choice(WAREHOUSES),
         "sku": random.choice(SKUS),
         "quantity_delta": delta,
@@ -88,16 +85,14 @@ def gen_shipment_event() -> dict:
         "tracking_number": uuid.uuid4().hex[:12].upper(),
         "origin_warehouse_id": random.choice(WAREHOUSES),
         "destination_postal_code": f"{random.randint(10000, 99999)}",
-        "estimated_delivery": (datetime.now(timezone.utc) + timedelta(days=random.randint(1, 7))).date().isoformat(),
+        "estimated_delivery": (datetime.now(UTC) + timedelta(days=random.randint(1, 7))).date().isoformat(),
     }
 
 
 def gen_return_event() -> dict:
     return {
         **_envelope("RMS-" + random.choice(WAREHOUSES)),
-        "event_type": random.choice(
-            ["RETURN_INITIATED", "RETURN_RECEIVED", "RETURN_INSPECTED", "RETURN_REFUNDED"]
-        ),
+        "event_type": random.choice(["RETURN_INITIATED", "RETURN_RECEIVED", "RETURN_INSPECTED", "RETURN_REFUNDED"]),
         "warehouse_id": random.choice(WAREHOUSES),
         "return_id": f"RET-{random.randint(100000, 999999)}",
         "order_id": f"ORD-{random.randint(100000, 999999)}",
@@ -111,12 +106,18 @@ def gen_supplier_event() -> dict:
     return {
         **_envelope("SRM-CENTRAL"),
         "event_type": random.choice(
-            ["SUPPLIER_ONBOARDED", "SUPPLIER_PO_ISSUED", "SUPPLIER_PO_ACKNOWLEDGED", "SUPPLIER_PO_DELAYED", "SUPPLIER_RATING_UPDATED"]
+            [
+                "SUPPLIER_ONBOARDED",
+                "SUPPLIER_PO_ISSUED",
+                "SUPPLIER_PO_ACKNOWLEDGED",
+                "SUPPLIER_PO_DELAYED",
+                "SUPPLIER_RATING_UPDATED",
+            ]
         ),
         "supplier_id": random.choice(SUPPLIERS),
         "po_number": f"PO-{random.randint(10000, 99999)}",
         "sku_list": random.sample(SKUS, k=random.randint(1, 4)),
-        "expected_delivery_date": (datetime.now(timezone.utc) + timedelta(days=random.randint(2, 21))).date().isoformat(),
+        "expected_delivery_date": (datetime.now(UTC) + timedelta(days=random.randint(2, 21))).date().isoformat(),
         "rating": round(random.uniform(2.5, 5.0), 1),
     }
 
@@ -149,6 +150,6 @@ def make_late(event: dict, min_minutes: int = 10, max_minutes: int = 90) -> dict
     warehouse with an intermittent network link uploading a batch late)."""
     late = dict(event)
     delay = timedelta(minutes=random.randint(min_minutes, max_minutes))
-    ts = datetime.now(timezone.utc) - delay
+    ts = datetime.now(UTC) - delay
     late["event_timestamp"] = ts.isoformat()
     return late

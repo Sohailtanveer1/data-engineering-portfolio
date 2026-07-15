@@ -16,19 +16,20 @@ poison message just gets redelivered forever and wedges the partition for
 every other event behind it; that's strictly worse than routing it to a
 DLQ a human can inspect on their own schedule.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from confluent_kafka import Consumer, KafkaError, Producer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "common"))
-from supplychain_common.config import DOMAINS, KAFKA_BOOTSTRAP_SERVERS_DEFAULT, dlq_topic_name, topic_name  # noqa: E402
+from supplychain_common.config import DOMAINS, KAFKA_BOOTSTRAP_SERVERS_DEFAULT, topic_name  # noqa: E402
 from supplychain_common.schema_validator import SchemaValidationError, validate_event  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -51,10 +52,18 @@ def build_dlq_producer(bootstrap_servers: str) -> Producer:
     return Producer({"bootstrap.servers": bootstrap_servers, "acks": "all"})
 
 
-def send_to_dlq(dlq_producer: Producer, source_topic: str, raw_value: bytes, key: bytes | None,
-                 reason: str, detail: str, partition: int, offset: int) -> None:
+def send_to_dlq(
+    dlq_producer: Producer,
+    source_topic: str,
+    raw_value: bytes,
+    key: bytes | None,
+    reason: str,
+    detail: str,
+    partition: int,
+    offset: int,
+) -> None:
     dlq_record = {
-        "failed_at": datetime.now(timezone.utc).isoformat(),
+        "failed_at": datetime.now(UTC).isoformat(),
         "source_topic": source_topic,
         "source_partition": partition,
         "source_offset": offset,
@@ -79,23 +88,33 @@ def process_message(msg, dlq_producer: Producer) -> None:
     try:
         event = json.loads(msg.value())
     except json.JSONDecodeError as exc:
-        send_to_dlq(dlq_producer, source_topic, msg.value(), msg.key(), "invalid_json", str(exc),
-                    msg.partition(), msg.offset())
+        send_to_dlq(
+            dlq_producer, source_topic, msg.value(), msg.key(), "invalid_json", str(exc), msg.partition(), msg.offset()
+        )
         return
 
     try:
         validate_event(event)
     except SchemaValidationError as exc:
-        send_to_dlq(dlq_producer, source_topic, msg.value(), msg.key(), "schema_validation_failed",
-                    "; ".join(exc.errors), msg.partition(), msg.offset())
+        send_to_dlq(
+            dlq_producer,
+            source_topic,
+            msg.value(),
+            msg.key(),
+            "schema_validation_failed",
+            "; ".join(exc.errors),
+            msg.partition(),
+            msg.offset(),
+        )
         return
 
     # Valid event — this is where a real consumer would do its work
     # (write-through cache, trigger a downstream call, etc). Here we just
     # log; the actual system-of-record write happens via the Dataflow
     # pipeline reading from Pub/Sub, not from this consumer.
-    logger.info("valid event: topic=%s event_type=%s event_id=%s",
-                source_topic, event.get("event_type"), event.get("event_id"))
+    logger.info(
+        "valid event: topic=%s event_type=%s event_id=%s", source_topic, event.get("event_type"), event.get("event_id")
+    )
 
 
 def run(domains: list[str], bootstrap_servers: str, group_id: str) -> None:

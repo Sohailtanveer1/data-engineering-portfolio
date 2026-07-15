@@ -9,6 +9,7 @@ streaming_pipeline.py uses (see WINDOW_SIZE_SECONDS / ALLOWED_LATENESS_SECONDS
 there), applied to a minimal record type instead of the full ParsedRecord
 graph, to keep the test focused on windowing behavior specifically.
 """
+
 import sys
 from pathlib import Path
 

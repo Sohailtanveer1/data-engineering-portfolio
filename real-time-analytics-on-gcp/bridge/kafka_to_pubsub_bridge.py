@@ -16,6 +16,7 @@ default login` locally, or set GOOGLE_APPLICATION_CREDENTIALS to a service
 account key when running as the dedicated bridge service account
 (see infra/terraform/modules/iam).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,12 +57,14 @@ def build_kafka_dlq_producer(bootstrap_servers: str) -> Producer:
 def send_kafka_dlq(dlq_producer: Producer, source_topic: str, raw_value: bytes, reason: str, detail: str) -> None:
     dlq_producer.produce(
         f"{source_topic}.dlq",
-        value=json.dumps({
-            "reason": reason,
-            "detail": detail,
-            "raw_value": raw_value.decode("utf-8", errors="replace"),
-            "stage": "kafka_to_pubsub_bridge",
-        }).encode("utf-8"),
+        value=json.dumps(
+            {
+                "reason": reason,
+                "detail": detail,
+                "raw_value": raw_value.decode("utf-8", errors="replace"),
+                "stage": "kafka_to_pubsub_bridge",
+            }
+        ).encode("utf-8"),
     )
     dlq_producer.poll(0)
     logger.warning("bridge DLQ'd message: topic=%s reason=%s", source_topic, reason)
@@ -109,7 +112,9 @@ def run(domains: list[str], bootstrap_servers: str, gcp_project: str) -> None:
                 consumer.commit(msg, asynchronous=False)
                 continue
             except SchemaValidationError as exc:
-                send_kafka_dlq(dlq_producer, source_topic, msg.value(), "schema_validation_failed", "; ".join(exc.errors))
+                send_kafka_dlq(
+                    dlq_producer, source_topic, msg.value(), "schema_validation_failed", "; ".join(exc.errors)
+                )
                 consumer.commit(msg, asynchronous=False)
                 continue
 
@@ -123,8 +128,9 @@ def run(domains: list[str], bootstrap_servers: str, gcp_project: str) -> None:
                 # is redelivered on restart instead of silently dropped —
                 # unlike a validation failure, a Pub/Sub outage is not the
                 # message's fault, so it deserves a retry, not a DLQ.
-                logger.exception("giving up publishing event_id=%s to Pub/Sub; leaving offset uncommitted",
-                                  event.get("event_id"))
+                logger.exception(
+                    "giving up publishing event_id=%s to Pub/Sub; leaving offset uncommitted", event.get("event_id")
+                )
                 continue
 
             consumer.commit(msg, asynchronous=False)

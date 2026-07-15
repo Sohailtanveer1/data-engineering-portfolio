@@ -18,6 +18,7 @@ sturdier (e.g. a BigQuery MERGE on event_id in the Silver layer — see
 bigquery/sql/silver/), which is why Silver does its own dedup pass too.
 Defense in depth, not one clever trick.
 """
+
 from __future__ import annotations
 
 import apache_beam as beam

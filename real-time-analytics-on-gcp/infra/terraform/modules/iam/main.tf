@@ -25,6 +25,12 @@ resource "google_service_account" "cicd_deployer" {
   display_name = "GitHub Actions Terraform deployer (${var.environment}) — auth via Workload Identity Federation, no static key"
 }
 
+resource "google_service_account" "bq_transform" {
+  project      = var.project_id
+  account_id   = "sa-bq-transform-${var.environment}"
+  display_name = "BigQuery scheduled queries (${var.environment}) — runs the Bronze->Silver MERGE jobs"
+}
+
 # Roles a Dataflow worker needs regardless of which pipeline it's running:
 # to exist as a worker at all (dataflow.worker) and to write its own
 # operational telemetry. Data-plane access (BigQuery, Pub/Sub, Secret
