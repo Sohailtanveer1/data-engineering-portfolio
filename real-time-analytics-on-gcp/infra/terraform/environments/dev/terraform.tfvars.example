@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars (gitignored) and fill in real values.
+# Never commit terraform.tfvars — it's excluded in the repo-root .gitignore.
+
+project_id         = "your-gcp-project-id"
+region             = "us-central1"
+bq_location        = "US"
+subnet_cidr        = "10.10.0.0/20"
+github_repository  = "your-github-username/data-engineering-portfolio"
+alert_email        = "you@example.com"
+looker_studio_viewers = [
+  # "user:you@example.com",
+]
