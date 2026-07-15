@@ -100,6 +100,12 @@ locals {
         { name = "origin_warehouse_id", type = "STRING", mode = "REQUIRED" },
         { name = "destination_postal_code", type = "STRING", mode = "NULLABLE" },
         { name = "estimated_delivery", type = "DATE", mode = "NULLABLE" },
+        # Populated by dataflow/transforms/enrich_shipment.py, not by the
+        # source event — null whenever the carrier API call was skipped
+        # (non-trackable event types) or failed after retries (enrichment
+        # failure degrades gracefully; it never blocks the write to Bronze).
+        { name = "carrier_live_status", type = "STRING", mode = "NULLABLE" },
+        { name = "carrier_eta", type = "TIMESTAMP", mode = "NULLABLE" },
       ]
     }
     returns = {
