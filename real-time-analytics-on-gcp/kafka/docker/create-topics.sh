@@ -4,6 +4,13 @@
 # reviewed decisions, not accidents of whatever a producer happened to send first.
 set -euo pipefail
 
+# On Windows/Git Bash (MSYS), any argument that looks like a Unix path is
+# auto-rewritten to a Windows path before being passed to docker.exe — which
+# breaks paths meant to be resolved INSIDE the Linux container (e.g.
+# /opt/kafka/bin/...). Disabling that conversion keeps container-side paths
+# intact. Harmless on macOS/Linux where the variable is simply ignored.
+export MSYS_NO_PATHCONV=1
+
 BOOTSTRAP="kafka-1:19092"
 TOPICS_SH="/opt/kafka/bin/kafka-topics.sh"
 

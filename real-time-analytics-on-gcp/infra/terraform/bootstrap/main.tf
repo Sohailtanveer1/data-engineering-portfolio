@@ -17,10 +17,22 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.30"
     }
+    # google-beta is required only for google_project_service_identity below —
+    # the BigQuery Data Transfer Service agent isn't in the GA provider's
+    # supported-services list for that resource.
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "~> 5.30"
+    }
   }
 }
 
 provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+provider "google-beta" {
   project = var.project_id
   region  = var.region
 }
@@ -45,6 +57,21 @@ resource "google_project_service" "required" {
   project            = var.project_id
   service            = each.value
   disable_on_destroy = false
+}
+
+# Explicitly create the BigQuery Data Transfer Service agent so it exists
+# before any environment's bigquery module tries to grant it
+# serviceAccountTokenCreator (that grant fails with "service account does
+# not exist" otherwise — a Google-managed identity that isn't auto-created
+# until first use). Creating it here, in bootstrap, means the dependency is
+# satisfied before any `environments/*` apply runs — codifying the manual
+# `gcloud beta services identity create` step so uat/prod never hit it.
+resource "google_project_service_identity" "bigquery_data_transfer" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "bigquerydatatransfer.googleapis.com"
+
+  depends_on = [google_project_service.required]
 }
 
 resource "google_storage_bucket" "tf_state" {

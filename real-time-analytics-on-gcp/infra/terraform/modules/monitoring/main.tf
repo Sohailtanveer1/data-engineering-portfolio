@@ -148,6 +148,14 @@ resource "google_logging_metric" "dataflow_errors" {
 }
 
 resource "google_monitoring_alert_policy" "dataflow_errors" {
+  # Gated: an alert policy referencing a log-based metric can't be created
+  # until Cloud Monitoring has seen that metric, which only happens after
+  # the first matching log line is ingested — i.e. after the Dataflow job
+  # has actually run. Set enable_logbased_metric_alerts=true and re-apply
+  # once the pipeline is live (RUNBOOK Step 9+). The metric itself
+  # (google_logging_metric.dataflow_errors above) is created regardless.
+  count = var.enable_logbased_metric_alerts ? 1 : 0
+
   project      = var.project_id
   display_name = "Dataflow job emitting errors (${var.environment})"
   combiner     = "OR"
@@ -189,6 +197,9 @@ resource "google_logging_metric" "bigquery_write_failures" {
 }
 
 resource "google_monitoring_alert_policy" "bigquery_write_failures" {
+  # Gated for the same reason as dataflow_errors above — see that comment.
+  count = var.enable_logbased_metric_alerts ? 1 : 0
+
   project      = var.project_id
   display_name = "BigQuery write failures (${var.environment})"
   combiner     = "OR"

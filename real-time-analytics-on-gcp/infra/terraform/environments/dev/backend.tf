@@ -4,7 +4,7 @@
 # replace YOUR_PROJECT_ID after running bootstrap.
 terraform {
   backend "gcs" {
-    bucket = "YOUR_PROJECT_ID-tfstate"
+    bucket = "supply-chain-dev-502714-tfstate"
     prefix = "environments/dev"
   }
 }

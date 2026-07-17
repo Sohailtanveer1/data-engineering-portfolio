@@ -4,6 +4,10 @@
 # (Phase 3/4). This only proves the Kafka plumbing itself works.
 set -euo pipefail
 
+# See create-topics.sh for why: stops Git Bash (MSYS) mangling the
+# container-side /opt/kafka/... paths. No-op on macOS/Linux.
+export MSYS_NO_PATHCONV=1
+
 TOPIC="supplychain.orders.v1"
 BOOTSTRAP="kafka-1:19092"
 

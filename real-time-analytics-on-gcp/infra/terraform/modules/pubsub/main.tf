@@ -22,18 +22,15 @@ resource "google_pubsub_topic" "domain" {
 
   message_retention_duration = "604800s" # 7 days — matches the Kafka topic retention
 
-  schema_settings {
-    schema   = google_pubsub_schema.domain[each.value].id
-    encoding = "JSON"
-  }
-}
-
-resource "google_pubsub_schema" "domain" {
-  for_each   = toset(local.domains)
-  project    = var.project_id
-  name       = "supplychain-${each.value}-v1-schema"
-  type       = "AVRO"
-  definition = file("${path.module}/avro_schemas/${each.value}.avsc")
+  # No Pub/Sub-level schema binding: the platform speaks plain JSON, but a
+  # Pub/Sub AVRO schema (even with encoding=JSON) enforces Avro's JSON
+  # encoding, which represents a nullable ["null","string"] field as
+  # {"string": "value"} rather than plain "value" — incompatible with the
+  # plain JSON every producer here emits. Validation instead happens at the
+  # application layers via JSON Schema (kafka/schemas/, applied by the
+  # producer, consumer, bridge, and the Dataflow parse_and_validate DoFn),
+  # which is the correct tool for plain-JSON payloads. The .avsc files under
+  # avro_schemas/ are retained as structural documentation only.
 }
 
 resource "google_pubsub_topic" "domain_dlq" {

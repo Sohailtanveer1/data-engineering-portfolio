@@ -86,7 +86,14 @@ def publish_to_pubsub(publisher: pubsub_v1.PublisherClient, topic_path: str, eve
 def run(domains: list[str], bootstrap_servers: str, gcp_project: str) -> None:
     consumer = build_kafka_consumer(bootstrap_servers)
     dlq_producer = build_kafka_dlq_producer(bootstrap_servers)
-    publisher = pubsub_v1.PublisherClient()
+    # enable_message_ordering must be set on the CLIENT for publish() to
+    # accept an ordering_key at all — it's a client-side guard, separate from
+    # the subscription's enable_message_ordering (which is what actually makes
+    # Pub/Sub deliver in order). Both are required: this to send the key, the
+    # subscription (set in the pubsub Terraform module) to honor it.
+    publisher = pubsub_v1.PublisherClient(
+        publisher_options=pubsub_v1.types.PublisherOptions(enable_message_ordering=True)
+    )
 
     topics = [topic_name(d) for d in domains]
     consumer.subscribe(topics)

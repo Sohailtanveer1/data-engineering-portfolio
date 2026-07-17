@@ -13,6 +13,13 @@ set -euo pipefail
 ENVIRONMENT="${1:?usage: deploy_dataflow_pipeline.sh <dev|uat|prod>}"
 PROJECT_ID="${PROJECT_ID:?set PROJECT_ID env var}"
 REGION="${REGION:-us-central1}"
+# Pin a specific zone: the region's default (us-central1-c) has hit
+# ZONE_RESOURCE_POOL_EXHAUSTED on this free-trial project. Override with
+# WORKER_ZONE=... if this one is also full (try -a, -b, -f).
+WORKER_ZONE="${WORKER_ZONE:-us-central1-f}"
+# e2-standard-2 is smaller than the Dataflow default (n1-standard-4) — more
+# widely available when zones are tight, and cheaper, which suits a free trial.
+WORKER_MACHINE_TYPE="${WORKER_MACHINE_TYPE:-e2-standard-2}"
 PIPELINE_VERSION="$(git rev-parse --short HEAD)"
 
 JOB_NAME="supplychain-streaming-${ENVIRONMENT}"
@@ -27,8 +34,8 @@ SUBNET="regions/${REGION}/subnetworks/supplychain-${ENVIRONMENT}-subnet"
 echo "== Building image ${IMAGE} via Cloud Build =="
 gcloud builds submit \
   --project "${PROJECT_ID}" \
-  --tag "${IMAGE}" \
-  --file dataflow/pipelines/Dockerfile \
+  --config dataflow/pipelines/cloudbuild.yaml \
+  --substitutions "_IMAGE=${IMAGE}" \
   .
 
 echo "== Building Flex Template spec at ${TEMPLATE_SPEC_GCS} =="
@@ -60,6 +67,9 @@ gcloud dataflow flex-template run "${JOB_NAME}" \
   --service-account-email "${WORKER_SA}" \
   --subnetwork "${SUBNET}" \
   --disable-public-ips \
+  --worker-zone "${WORKER_ZONE}" \
+  --worker-machine-type "${WORKER_MACHINE_TYPE}" \
+  --max-workers 2 \
   --parameters project="${PROJECT_ID}",environment="${ENVIRONMENT}",raw_archive_bucket="${RAW_ARCHIVE_BUCKET}",pipeline_version="${PIPELINE_VERSION}" \
   "${UPDATE_FLAG[@]}"
 

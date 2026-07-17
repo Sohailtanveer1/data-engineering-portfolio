@@ -45,3 +45,9 @@ variable "latency_threshold_seconds" {
   type    = number
   default = 120
 }
+
+variable "enable_logbased_metric_alerts" {
+  type        = bool
+  default     = false
+  description = "Gates the two alert policies that reference log-based metrics (Dataflow errors, BigQuery write failures). Keep false until the streaming pipeline has run at least once — Cloud Monitoring rejects an alert policy on a log-based metric it has never seen data for. Flip to true and re-apply after RUNBOOK Step 9."
+}
