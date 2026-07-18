@@ -45,10 +45,11 @@ module "bigquery" {
 }
 
 module "dataflow" {
-  source      = "../../modules/dataflow"
-  project_id  = var.project_id
-  region      = var.region
-  environment = local.environment
+  source                   = "../../modules/dataflow"
+  project_id               = var.project_id
+  region                   = var.region
+  environment              = local.environment
+  dataflow_worker_sa_email = module.iam.dataflow_worker_sa_email
 }
 
 module "secret_manager" {

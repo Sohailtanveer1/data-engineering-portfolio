@@ -32,3 +32,16 @@ resource "google_artifact_registry_repository" "dataflow_images" {
     }
   }
 }
+
+# The Flex Template launcher VM and the workers both run as the Dataflow
+# worker SA and must PULL the pipeline image from this repo — without
+# reader access the launch dies at "artifactregistry.repositories.
+# downloadArtifacts denied" before the job graph is ever built. (Cloud
+# Build has separate push access via its own SA; this is the read side.)
+resource "google_artifact_registry_repository_iam_member" "worker_reader" {
+  project    = var.project_id
+  location   = google_artifact_registry_repository.dataflow_images.location
+  repository = google_artifact_registry_repository.dataflow_images.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${var.dataflow_worker_sa_email}"
+}

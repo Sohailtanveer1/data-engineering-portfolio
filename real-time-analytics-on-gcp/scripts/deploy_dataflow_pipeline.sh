@@ -12,13 +12,15 @@ set -euo pipefail
 
 ENVIRONMENT="${1:?usage: deploy_dataflow_pipeline.sh <dev|uat|prod>}"
 PROJECT_ID="${PROJECT_ID:?set PROJECT_ID env var}"
-REGION="${REGION:-us-central1}"
-# Pin a specific zone: the region's default (us-central1-c) has hit
-# ZONE_RESOURCE_POOL_EXHAUSTED on this free-trial project. Override with
-# WORKER_ZONE=... if this one is also full (try -a, -b, -f).
-WORKER_ZONE="${WORKER_ZONE:-us-central1-f}"
+REGION="${REGION:-us-east1}"
+# Zone is left empty by default so Dataflow auto-selects an available zone
+# within REGION (avoids a hardcoded zone that could be exhausted or, worse,
+# not exist in the chosen region). Pin one only if you need to — e.g.
+# WORKER_ZONE=us-east1-b — and make sure it belongs to REGION.
+WORKER_ZONE="${WORKER_ZONE:-}"
 # e2-standard-2 is smaller than the Dataflow default (n1-standard-4) — more
-# widely available when zones are tight, and cheaper, which suits a free trial.
+# widely available when a zone is tight on the older n1 family, and cheaper,
+# which suits a free trial.
 WORKER_MACHINE_TYPE="${WORKER_MACHINE_TYPE:-e2-standard-2}"
 PIPELINE_VERSION="$(git rev-parse --short HEAD)"
 
@@ -57,6 +59,13 @@ else
   echo "No running job named ${JOB_NAME} — launching fresh."
 fi
 
+# Only pass --worker-zone when a zone is explicitly set; otherwise let
+# Dataflow pick an available zone in REGION.
+ZONE_FLAG=()
+if [[ -n "${WORKER_ZONE}" ]]; then
+  ZONE_FLAG=(--worker-zone "${WORKER_ZONE}")
+fi
+
 echo "== Launching/updating job ${JOB_NAME} =="
 gcloud dataflow flex-template run "${JOB_NAME}" \
   --project "${PROJECT_ID}" \
@@ -67,8 +76,9 @@ gcloud dataflow flex-template run "${JOB_NAME}" \
   --service-account-email "${WORKER_SA}" \
   --subnetwork "${SUBNET}" \
   --disable-public-ips \
-  --worker-zone "${WORKER_ZONE}" \
+  "${ZONE_FLAG[@]}" \
   --worker-machine-type "${WORKER_MACHINE_TYPE}" \
+  --launcher-machine-type "${WORKER_MACHINE_TYPE}" \
   --max-workers 2 \
   --parameters project="${PROJECT_ID}",environment="${ENVIRONMENT}",raw_archive_bucket="${RAW_ARCHIVE_BUCKET}",pipeline_version="${PIPELINE_VERSION}" \
   "${UPDATE_FLAG[@]}"

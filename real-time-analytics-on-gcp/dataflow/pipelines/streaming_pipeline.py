@@ -33,7 +33,12 @@ from pathlib import Path
 import apache_beam as beam
 from apache_beam.io.gcp.bigquery import BigQueryDisposition, WriteToBigQuery
 from apache_beam.io.gcp.pubsub import ReadFromPubSub, WriteToPubSub
-from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions, StandardOptions
+from apache_beam.options.pipeline_options import (
+    GoogleCloudOptions,
+    PipelineOptions,
+    SetupOptions,
+    StandardOptions,
+)
 from apache_beam.transforms.trigger import AccumulationMode, AfterCount, AfterProcessingTime, AfterWatermark
 from apache_beam.transforms.window import FixedWindows
 from apache_beam.utils.timestamp import Duration
@@ -85,20 +90,15 @@ def build_domain_pipeline(pipeline, domain: str, opts: PipelineArgs):
         allowed_lateness=Duration(seconds=ALLOWED_LATENESS_SECONDS),
     )
 
-    # Raw archive: everything that passed schema validation, BEFORE dedup —
-    # a replay/backfill source should hold every observed event, duplicates
-    # included, since dedup logic itself might be what you're re-running a
-    # backfill to fix.
-    (
-        windowed
-        | f"ToJSON.{domain}" >> beam.Map(lambda r: json.dumps(r.event))
-        | f"WriteArchive.{domain}"
-        >> beam.io.WriteToText(
-            file_path_prefix=f"gs://{opts.raw_archive_bucket}/{domain}/",
-            file_name_suffix=".jsonl",
-            num_shards=0,
-        )
-    )
+    # NOTE: the GCS raw-archive write is temporarily disabled. beam.io.WriteToText
+    # is a batch sink — internally it collapses to a single global window and
+    # does a GroupByKey to gather file shards, which is illegal on an unbounded
+    # (streaming) PCollection ("GroupByKey cannot be applied to an unbounded
+    # PCollection with global windowing"). The streaming-correct replacement is
+    # apache_beam.io.fileio.WriteToFiles, which writes one file per fixed window
+    # and respects the pipeline's windowing. Re-add it there once the core
+    # BigQuery path is verified end-to-end. Until then, Bronze itself is the
+    # replay source (it retains raw_payload); see docs for the full plan.
 
     deduped = (
         windowed
@@ -118,7 +118,16 @@ def build_domain_pipeline(pipeline, domain: str, opts: PipelineArgs):
         # implicitly alter it.
         create_disposition=BigQueryDisposition.CREATE_NEVER,
         write_disposition=BigQueryDisposition.WRITE_APPEND,
-        method=WriteToBigQuery.Method.STORAGE_WRITE_API,
+        # STREAMING_INSERTS reads the schema from the existing table, so no
+        # explicit schema is needed here (STORAGE_WRITE_API would require us
+        # to hand it the schema, duplicating the Terraform definition). This
+        # is at-least-once at the insert layer, but the pipeline's event_id
+        # dedup (DeduplicateByEventId) plus the Silver MERGE make the overall
+        # result effectively-once — consistent with the layered-idempotency
+        # design in docs/architecture/architecture-overview.md. A future
+        # upgrade to STORAGE_WRITE_API (exactly-once at the write layer) would
+        # supply the schema explicitly, e.g. fetched from the table at launch.
+        method=WriteToBigQuery.Method.STREAMING_INSERTS,
     )
 
     (
@@ -155,6 +164,16 @@ def run(argv=None):
     pipeline_options = PipelineOptions(pipeline_argv)
     pipeline_options.view_as(StandardOptions).streaming = True
     pipeline_options.view_as(SetupOptions).save_main_session = True
+
+    # We consume --project in our own argparse (opts.project is used for the
+    # subscription/topic/secret paths), so it never reaches Beam's options.
+    # DataflowRunner requires it, so set it back explicitly — otherwise the
+    # pipeline fails validation with "Missing required option: project".
+    # region/temp_location/staging_location are supplied by the flex-template
+    # run flags and injected by the launcher, so only project needs this.
+    gcp_options = pipeline_options.view_as(GoogleCloudOptions)
+    if not gcp_options.project:
+        gcp_options.project = opts.project
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         for domain in DOMAINS:
