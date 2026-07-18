@@ -4,6 +4,27 @@ A running log of real decisions and real problems hit while building this,
 not a retrospective written after the fact from memory. Keep this updated
 as the project evolves past its initial build.
 
+> **The full catalogue of deployment war stories** (packaging the Beam
+> pipeline, IAM/service-agent issues, zone exhaustion, streaming-sink
+> constraints, Pub/Sub ordering/schema, and Windows tooling) now lives in
+> [HANDBOOK.md Part 5](../HANDBOOK.md#part-5--the-debugging-journey-war-stories),
+> organized as Symptom → Root cause → Fix → Lesson for interview use. This
+> file keeps the earlier build-time notes below.
+
+## Deployment saga — one-line index (full detail in HANDBOOK Part 5)
+
+Hit while taking the pipeline from "code complete" to "running on Dataflow":
+Cloud Build SA missing `builds.builder` · worker SA missing
+`artifactregistry.reader` · DTS service agent not auto-created ·
+`ZONE_RESOURCE_POOL_EXHAUSTED` (n1 family / us-central1-c) · Flex Template
+`-e` requirements bug · Beam "Missing required option: project" · `WriteToText`
+illegal on unbounded PCollection · `STORAGE_WRITE_API` needs explicit schema
+· workers on stock SDK container (missing code) · missing `kafka/schemas` in
+image · Pub/Sub publisher ordering flag · Pub/Sub Avro-vs-plain-JSON · WIF
+pool 30-day soft-delete on recreate · Windows: CLOUDSDK_PYTHON stub,
+MSYS path mangling, `bq` parsing `--` SQL comments as flags. Each one is a
+real, transferable lesson — see the Handbook.
+
 ## Environment/tooling problems hit while building this (worth knowing before you hit them too)
 
 **`apache-beam` doesn't install on Python 3.14.** Tried first — failed with

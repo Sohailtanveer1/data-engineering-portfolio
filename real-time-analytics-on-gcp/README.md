@@ -53,23 +53,30 @@ Manager, Cloud Storage, Cloud Logging/Monitoring.
 | `looker/` | Looker Studio dashboard definitions/notes |
 | `scripts/` | Operational scripts (local bootstrap, replay, backfill) |
 
+## 📖 Start here: [HANDBOOK.md](HANDBOOK.md)
+
+**New to this project? Read [the Handbook](HANDBOOK.md) first.** It's the
+single document that teaches the whole platform from zero, runs like a lab,
+captures the real debugging journey, and arms you to defend every decision
+in an interview. Everything else below is detail the Handbook links into.
+
 ## Project Status
 
-✅ **Repo complete** — Kafka ingestion, Pub/Sub bridge, Terraform-managed
-GCP infrastructure (dev/uat/prod), the Beam/Dataflow streaming pipeline,
-BigQuery Medallion layers, CI/CD, and full documentation are all built. 23
-tests pass. See [docs/lessons-learned.md](docs/lessons-learned.md) for the
-running log of decisions and known gaps (flagged explicitly, not hidden).
+✅ **Built and deployed end to end** — Kafka ingestion → Pub/Sub bridge →
+Beam/Dataflow streaming pipeline → BigQuery Bronze/Silver/Gold → Looker
+Studio, all running on live GCP (dev). Terraform-managed across
+dev/uat/prod, least-privilege IAM, CI/CD, monitoring. 23 tests pass.
 
-**Not yet done:** actually deploying this to a live GCP project — that's
-a manual step you run yourself, following [RUNBOOK.md](RUNBOOK.md).
+Known limitations are flagged openly (not hidden) in
+[HANDBOOK.md §6.6](HANDBOOK.md#66--known-limitations-state-these-proactively--its-a-strength)
+and [docs/lessons-learned.md](docs/lessons-learned.md).
 
 ## Getting Started
 
-- **To deploy this yourself, step by step:** [RUNBOOK.md](RUNBOOK.md) —
+- **To learn / defend the project:** [HANDBOOK.md](HANDBOOK.md) — the front door.
+- **To deploy it yourself, step by step:** [RUNBOOK.md](RUNBOOK.md) —
   exact commands, in order, with a verification checkpoint after each one.
-- **To understand why it's built this way:** [docs/setup-guide.md](docs/setup-guide.md)
-  (the map) and [docs/architecture/architecture-overview.md](docs/architecture/architecture-overview.md)
+- **To understand why it's built this way:** [docs/architecture/architecture-overview.md](docs/architecture/architecture-overview.md)
   (every data engineering concept explained with business value + interview framing).
 
 ## Documentation Index
