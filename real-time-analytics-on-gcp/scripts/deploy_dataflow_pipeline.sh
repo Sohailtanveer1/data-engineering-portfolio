@@ -80,7 +80,13 @@ gcloud dataflow flex-template run "${JOB_NAME}" \
   --worker-machine-type "${WORKER_MACHINE_TYPE}" \
   --launcher-machine-type "${WORKER_MACHINE_TYPE}" \
   --max-workers 2 \
-  --parameters project="${PROJECT_ID}",environment="${ENVIRONMENT}",raw_archive_bucket="${RAW_ARCHIVE_BUCKET}",pipeline_version="${PIPELINE_VERSION}" \
+  --parameters project="${PROJECT_ID}",environment="${ENVIRONMENT}",raw_archive_bucket="${RAW_ARCHIVE_BUCKET}",pipeline_version="${PIPELINE_VERSION}",sdk_container_image="${IMAGE}" \
   "${UPDATE_FLAG[@]}"
+
+# NOTE: sdk_container_image above is a standard Beam pipeline option (Beam
+# maps it to WorkerOptions), passed through --parameters because the pipeline
+# forwards unknown args to PipelineOptions. It makes the workers run our
+# dual-purpose image (which has the pipeline code + deps) instead of the
+# stock Beam SDK container — required, or workers crash on import.
 
 echo "== Done. Job: ${JOB_NAME} (version ${PIPELINE_VERSION}) =="
